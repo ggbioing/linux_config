@@ -1,0 +1,18 @@
+[user]
+	name = Luigi Antelmi
+	email = luigi.antelmi@gmail.com
+[push]
+	default = simple
+[url "https://"]
+	insteadOf = git://
+[color]
+	ui = auto
+[core]
+	editor = vim
+[credential]
+	helper = cache --timeout=3600
+[http]
+	postBuffer = 524288000
+[alias]
+	history = log --graph --full-history --pretty=format:'%C(red)%h%Creset -%C(bold yellow)%d%C(bold cyan) %s %Creset %C(bold green)(%cr)%Creset - %C(white) %cn %Creset' --abbrev-commit --date=relative
+	historyheads = log --graph --all --decorate --simplify-by-decoration
