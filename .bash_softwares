@@ -1,0 +1,108 @@
+export SOFTWAREDIR="$HOME/Software"
+export SOFTWARE_DIR="$SOFTWAREDIR"
+export PATH="${SOFTWAREDIR}/bin:${PATH}"
+
+# BASH
+export PATH="${SOFTWAREDIR}/bash:${PATH}"
+
+# MYSCRIPTS
+export MYSCRIPTS="${HOME}/Dropbox/PROGETTI/script"
+export PATH="${MYSCRIPTS}/general_neuroimaging:${PATH}"
+export PATH="${MYSCRIPTS}/miscellanea:${PATH}"
+export PATH="${MYSCRIPTS}/oar:${PATH}"
+
+##########
+## ANTs ##
+##########
+export ANTSPATH="${SOFTWAREDIR}/antsbin/bin"
+export PATH="${ANTSPATH}:${PATH}"
+
+## Convert3D Medical Image Processing Tool
+export PATH="${SOFTWAREDIR}/c3d-1.1.0-Linux-x86_64/bin:${PATH}"
+export LD_LIBRARY_PATH="${SOFTWAREDIR}/c3d-1.1.0-Linux-x86_64/lib:${LD_LIBRARY_PATH}"
+
+##############
+## DCM2NIIX ##
+##############
+export PATH="/home/luigi/GIT/dcm2niix/bin:${PATH}"
+
+##################
+## DicomBrowser ##
+##################
+# alias DicomBrowser="java -jar ${SOFTWARE_DIR}/DicomBrowser-1.7.0b5-bin-with-dependencies.jar"
+export PATH="${SOFTWAREDIR}/DicomBrowser-1.5.2/bin:${PATH}"
+
+#########
+## DTK ##
+#########
+export DTK_PATH="/usr/local/dtk"
+export PATH="${DTK_PATH}:${PATH}"
+export DSI_PATH="${DTK_PATH}/matrices"
+
+################
+## ExploreDTI ##
+################
+export LD_LIBRARY_PATH="${SOFTWAREDIR}/ExploreDTI/Source/MD_cor_E/linux64:$LD_LIBRARY_PATH"
+
+################
+## FREESURFER ##
+################
+export FREESURFER_HOME='/usr/local/freesurfer'
+export SUBJECTS_DIR="$HOME/subjects"
+[ -f $FREESURFER_HOME/SetUpFreeSurfer.sh ] && . $FREESURFER_HOME/SetUpFreeSurfer.sh
+export PATH="${HOME}/Dropbox/HowTo/FreeSurfer:${PATH}"
+
+#########
+## FSL ##
+#########
+export FSLDIR="${SOFTWAREDIR}/fsl-5.0.10/fsl"
+[ -f ${FSLDIR}/etc/fslconf/fsl.sh ] && . ${FSLDIR}/etc/fslconf/fsl.sh
+export PATH=${FSLDIR}/bin:${PATH}
+
+##########
+## JAVA ##
+##########
+export PATH="${SOFTWAREDIR}/jdk/bin:$PATH"
+
+###########
+## MANGO ##
+###########
+export PATH="${SOFTWAREDIR}/Mango:${PATH}"
+
+##############
+## MENDELEY ##
+##############
+export PATH="${SOFTWAREDIR}/mendeley/bin:${PATH}"
+
+###############
+## MINICONDA ##
+###############
+export PATH="${SOFTWAREDIR}/miniconda3/bin:${PATH}"
+[ -f "${SOFTWAREDIR}/miniconda3/etc/profile.d/conda.sh" ] && . "${SOFTWAREDIR}/miniconda3/etc/profile.d/conda.sh"
+##############
+## MRICROGL ##
+##############
+export PATH="${SOFTWAREDIR}/mricrogl_lx:${PATH}"
+
+###########
+# PYCHARM #
+###########
+export PYCHARMDIR="${SOFTWARE_DIR}/pycharm"
+export PATH="${PYCHARMDIR}/bin:${PATH}"
+
+## ROBEX
+export PATH="${SOFTWAREDIR}/ROBEX:${PATH}"
+
+###################
+## WORKBENCH HCP ##
+###################
+export CARET7DIR=/usr/local/workbench/bin_linux64
+export PATH="${CARET7DIR}:$PATH"
+
+export PATH="${PATH}:/usr/local/MATLAB/ExploreDTI/Source/MD_cor_E/linux64"
+export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:/usr/local/MATLAB/ExploreDTI/Source/MD_cor_E/linux64"
+
+# tor
+alias tor="${SOFTWAREDIR}/tor/start-tor-browser.desktop"
+# added by Miniconda3 4.3.14 installer
+export PATH="/home/luigi/miniconda3/bin:$PATH"
