@@ -52,6 +52,7 @@ export PATH="${MRICROGLDIR}:${PATH}"
 
 # miniconda3 python
 export PATH="${SOFTWARE_DIR}/Python3/miniconda3/bin:${PATH}"
+[ -f "${SOFTWAREDIR}/Python3/miniconda3/etc/profile.d/conda.sh" ] && . "${SOFTWAREDIR}/Python3/miniconda3/etc/profile.d/conda.sh"
 
 # plink
 export PATH="${SOFTWARE_DIR}/plink:${PATH}"
