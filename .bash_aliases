@@ -53,7 +53,7 @@ alias mv='mv -i'
 alias rm='rm -i'
 
 # Dictionaries and Manuals
-alias myManual="vim ${HOME}/Dropbox/HowTo/manual.txt.sh"
+alias myManual="vim ${HOME}/.manual"
 alias myLateX="vim ${HOME}/Dropbox/HowTo/latex.tex"
 
 # MATH
