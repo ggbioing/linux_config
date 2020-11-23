@@ -882,6 +882,17 @@ sudo beegfs-ctl --getquota --gid epione
 # vnc
 vncviewer -FullColor -geometry 1400x1024 -via srv-asclepios.inria.fr vnc-lantelmi:0
 
+########
+## IP ##
+########
+ip addr add dev eth0 192.168.1.41/24
+ip route add default via 192.168.1.1 dev eth0
+vim /etc/resolv.conf
+	search station
+	nameserver 192.168.1.1
+ip link set eth0 up
+ip addr show dev eth0
+
 #########
 ## ISO ##
 #########
