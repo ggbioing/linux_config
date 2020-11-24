@@ -1538,6 +1538,16 @@ qpdf --empty --pages cerfa0.pdf 1 cerfa1.pdf 1 cerfa2.pdf 1 -- out.pdf
 qpdf --empty --pages /home/lantelmi/Documents/blank.pdf 1 fantasie.pdf 1-10 -- out.pdf
 qpdf --empty --pages *.pdf -- out.pdf
 
+#######
+## R ##
+#######
+# Compile from source
+./configure [--prefix=${SOFTWAREDIR}/R --enable-utf8 --with-pcre1 --enable-R-shlib] #  The last option is to enable a library needed by RStudio
+make
+
+## RSTUDIO
+export RSTUDIO_WHICH_R=${SOFTWAREDIR}/R-4.0.3/bin/R && rstudio
+
 ##############
 ## RDESKTOP ##
 ##############
