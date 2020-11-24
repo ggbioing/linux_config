@@ -1,0 +1,2220 @@
+# Remove all old kernels
+sudo apt-get purge $(dpkg -l linux-{image,headers}-"[0-9]*" | awk '/ii/{print $2}' | grep -ve "$(uname -r | sed -r 's/-[a-z]+//')")
+
+test Regular Expressions http://gskinner.com/RegExr/
+
+network configuration
+https://help.ubuntu.com/10.04/serverguide/network-configuration.html
+
+########
+## 7z ##
+########
+7z a bookcopy.pdf.7z bookcopy.pdf
+7z d file.x.7z
+# folder
+tar -c <folder> | 7z a -si <folder>.tar.7z
+
+
+#####################
+## USER MANAGEMENT ##
+#####################
+# System user: no password login or home
+sudo useradd --system <user>
+sudo usermod -L <user> # lock to prevent logging
+# Without a home directory
+sudo useradd myuser
+# With home directory
+sudo useradd -m myuser
+
+sudo passwd myuser
+
+Then set the shell
+sudo usermod -s /bin/bash myuser
+
+Heres the command I almost always use:
+NEWUSER=  && sudo useradd -d /home/$NEWUSER -s /bin/bash -m $NEWUSER
+
+######################
+## GROUP MANAGEMENT ##
+######################
+# setting the folder /temp as 'scratch'
+chgrp scratch temp/
+# every file creating under temp will be 'scratch'
+chmod g+s temp/
+
+# add user to a group
+groupadd $GROUP
+getent group $GROUP # check if group exist
+sudo useradd -d /var/ftp/IT-biomarkapd -s /sbin/nologin -m IT-biomarkapd
+usermod -a -G $GROUP $USER
+adduser $USER $GROUP [e.g. sudo]
+
+echo -n IT-biomarkapd | md5sum
+01845cd31bb33c36a2e50c87cea3c90c
+
+# vsftp "no delete" rigths
+useradd -d /var/vsftp/ASL -s /usr/sbin/nologin -m brescia
+usermod -a -G asl brescia
+
+##########
+## ANTs ##
+##########
+git clone git://github.com/stnava/ANTs.git
+mkdir antsbin && cd antsbin
+sudo apt-get install gcc g++ zlib1g-dev
+ccmake ../ANTs
+press c [confiure] t [toggle to advanced and turn off] and g [generate]
+make -j 4
+
+1. to run the scripts, you need to copy the Scripts/* to antsbin/bin/
+2. set the ANTSPATH to point to the antsbin/bin/ directory. e.g. in your profile add:
+ANTSPATH=/home/myname/mycode/antsbin/bin/
+
+#########
+## APT ##
+#########
+nano /etc/apt/sources.list
+apt-cache showpkg <pkg>
+sudo apt-add-repository "deb http://stat.ethz.ch/CRAN/bin/linux/ubuntu precise/"
+# proxy
+sudo nano /etc/apt/apt.conf
+Acquire::http::proxy "http://192.168.100.62:8080/";
+Acquire::https::proxy "https://192.168.100.62:8080/";
+Acquire::ftp::proxy "ftp://192.168.100.62:8080/";
+
+############
+## ASPELL ##
+############
+install aspell aspell-fr aspell-en
+aspell check [options] fichier
+aspell check --lang=fr $HOME/.aspell.txt
+
+##########
+## ADNI ##
+##########
+# adni merge on R
+install.packages("Hmisc")
+install.packages("/path/to/ADNIMERGE_0.0.1.tar.gz", repos = NULL, type = "source")
+library("ADNIMERGE")
+help(package = "ADNIMERGE")
+?adas
+
+############
+## avconv ##
+############
+sudo apt-get install libav-tools,libavcodec-extra-53
+avconv -i incontro.aac incontro.wav 
+avconv -i 20marzo.avi -c:v mpeg2video  -f mpeg test.mpg
+avconv -i 20marzo.avi -c:v mpeg2video -c:a libmp3lame -f mpeg 20marzo.mpg
+avconv -i original.avi -c:v libx264 -c:a libmp3lame -f avi prova2.avi
+
+#########
+## AWK ##
+#########
+awk '{split($0,a,"-")}; /T00-001/ {print a[1]"-"a[2] " " $1}'
+cat zipList | awk '{print substr($1,1,21)}'
+# filter
+awk 'FS="\",\"" {if ( $24 == 1 ) print $1}' CAPSLIFE.csv
+ls -l | awk 'BEBIN {SUM = 0} { SUM += $5} END { print SUM/1024/1024/1024, "GB"}'
+# parse csv
+zcat ukb8504.csv.gz | sed 's|","|@@,@@|g' | awk -F'@@,@@' '{if ($2283!="") {print $1" "$2283, SUM+=1}} END {print SUM}'
+
+##########
+## BASH ##
+##########
+# POSIX parameter expansion
++--------------------+----------------------+-----------------+-----------------+
+|                    |       parameter      |     parameter   |    parameter    |
+|                    |   Set and Not Null   |   Set But Null  |      Unset      |
++--------------------+----------------------+-----------------+-----------------+
+| ${parameter:-word} | substitute parameter | substitute word | substitute word |
+| ${parameter-word}  | substitute parameter | substitute null | substitute word |
+| ${parameter:=word} | substitute parameter | assign word     | assign word     |
+| ${parameter=word}  | substitute parameter | substitute null | assign word     |
+| ${parameter:?word} | substitute parameter | error, exit     | error, exit     |
+| ${parameter?word}  | substitute parameter | substitute null | error, exit     |
+| ${parameter:+word} | substitute word      | substitute null | substitute null |
+| ${parameter+word}  | substitute word      | substitute word | substitute null |
++--------------------+----------------------+-----------------+-----------------+
+
+${var+x} is a parameter expansion which evaluates to nothing if var is unset and substitutes the string x otherwise.
+
+#!/urs/bin/env bash
+bn=$(basename "$fullfile")
+ext="${bn##*.}"
+fn="${bn%.*}"
+lowercase="${bn,,}"
+uppercase="${bn^^}"
+Alternatively, you can focus on the last '/' of the path instead of the '.' which should work even if you have unpredictable file extensions:
+fn="${fullfile##*/}"
+# epoch + nanoseconds
+tempVar=$(date +%s%N)
+tempVar=$(date +%Y-%m-%d_%H:%m:%S)
+
+cat << EOF > test.txt
+set terminal png
+set output "test.png"
+set yrange [0:200e3]
+plot "<cat"
+EOF
+
+############
+## BASHRC ##
+############
+https://wiki.archlinux.org/index.php/Color_Bash_Prompt_(Italiano)
+if [ "$color_prompt" = yes ]; then
+    PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
+    PS1='${debian_chroot:+($debian_chroot)}\[\033[01;37m\][\[\033[01;36m\]\u\[\033[01;37m\]@\[\033[01;32m\]\h\[\033[00m\]:\[\033[01;33m\]\W\[\033[01;37m\]]\[\033[00m\] '
+else
+    PS1='${debian_chroot:+($debian_chroot)}\u@\h:\W\$ '
+fi
+Black       0;30     Dark Gray     1;30
+Blue        0;34     Light Blue    1;34
+Green       0;32     Light Green   1;32
+Cyan        0;36     Light Cyan    1;36
+Red         0;31     Light Red     1;31
+Purple      0;35     Light Purple  1;35
+Brown       0;33     Yellow        1;33
+Light Gray  0;37     White         1;37
+# Background
+On_Black='\e[40m'       # Nero
+On_Red='\e[41m'         # Rosso
+On_Green='\e[42m'       # Verde
+On_Yellow='\e[43m'      # Giallo
+On_Blue='\e[44m'        # Blu
+On_Purple='\e[45m'      # Purple
+On_Cyan='\e[46m'        # Ciano
+On_White='\e[47m'       # Bianco
+
+########
+## BC ##
+########
+# two decimal places
+echo "scale=2; 3/5" | bc -l
+
+###########
+## BESTA ##
+###########
+nslookup DSK-RAD-11.besta.local
+alias rdesktop_funzionale='rdesktop -d dsk-rad-11 -u funzionale -g 1240x740 10.100.212.24'
+
+###################
+## broadcom wifi ##
+###################
+
+sudo apt-get remove --purge bcmwl-kernel-source
+sudo modprobe -rv wl
+sudo apt-get install linux-firmware-nonfree
+echo "b43" >> /etc/modules
+reboot
+
+###########
+## CACHE ##
+###########
+free -g && sync && echo 3 > /proc/sys/vm/drop_caches && free -g
+
+################
+## CALCULATOR ##
+################
+echo 'scale=25;57/43' | bc
+# convert from hexadecimal to decimal
+echo 'ibase=16;obase=A;FF' | bc 
+
+
+##############
+## CLIMAGIC ##
+##############
+# Quickly find the largest 5 files in a directory tree on a single file system.
+find . -xdev -ls 2> /dev/null | sort -k7nr | head -5
+# delayed screenshot
+gnome-screenshot  --delay=2
+# Show most common words in filenames
+ls | tr '[[:punct:][:space:]]' '\n' | grep -v "^\s*$" | sort | uniq -c | sort -bn
+
+###########
+## CONDA ##
+###########
+conda update -n base conda
+
+conda info --envs
+conda env create -f environment.yml
+conda list
+conda env remove --name myenv
+conda env export > environment.yml
+
+##########
+## CRON ##
+##########
+http://jeff.loiselles.com/?p=5
+# DAEMON SCRIPT
+#!/bin/bash
+while [ 1 -eq 1 ]; do
+# do some stuff
+sleep 5
+done
+# CRON SCRIPT
+#!/bin/bash
+OUTPUT=`ps -ef | grep ‘[b]ash_daemon\.sh’`
+if [ “$OUTPUT” ]
+then
+echo running
+else
+/home/jeff/bin/bash_daemon.sh
+fi
+# edit crontab
+* * * * * /home/jeff/bin/bash_cron.sh 	> /dev/null 2>&1
+
+# dropbox backup
+7 23 * * *	rsync -av --delete /home/luigi/Dropbox /home/luigi/BACKUPS/Dropbox/daily/
+37 23 * * 0	rsync -av --delete /home/luigi/Dropbox /home/luigi/BACKUPS/Dropbox/weekly/
+1 22 1 * *	tar -c /home/luigi/Dropbox | /home/luigi/.linuxbrew/bin/pbzip2 -c > /home/luigi/BACKUPS/Dropbox/monthly_$(/bin/date +\%F).tar.bz2
+
+# http://www.cyberciti.biz/faq/linux-execute-cron-job-after-system-reboot/
+
+##########
+## CUDA ##
+##########
+module purgei && module load cuda/10.0 cudnn/7.4-cuda-10.0
+
+##########
+## CURL ##
+##########
+# check HTTP response code
+if [[ $(curl -s -o /dev/null -I -w "%{http_code}" http://biobank.ctsu.ox.ac.uk/crystal/index.cgi) == "3"?? ]] && echo "redirection"
+# use proxy
+curl --proxy http://192.168.100.62:8080 "http://surfer.nmr.mgh.harvard.edu/fswiki/MatlabRuntime?action=AttachFile&do=get&target=runtime2012bLinux.tar.gz" -o "runtime2012b.tar.gz"
+# sharepoint
+curl --ntlm -u DOMAIN/user https://sharepoint.domain.com/path/to/file
+
+##########
+## DATE ##
+##########
+sudo dpkg-reconfigure tzdata
+# behind proxy
+sudo date -s "$(curl -sD - google.com | grep '^Date:' | cut -d' ' -f3-)"
+# epoch + nanoseconds
+date +%s%N
+
+########
+## DD ##
+########
+sudo dd bs=4M if=windows7.iso of=/dev/sdc #bs is optional
+dd if=/dev/zero of=sparse.img bs=1 count=0 seek=100M # sparse file
+dd_rescue -a -b 8M /dev/sda1 /mount/external/backup/sda1.raw # sparsify sda1
+
+#########
+## DNS ##
+#########
+http://www.miamammausalinux.org/2015/02/capire-i-concetti-di-dns-autoritativo-e-configurare-un-servizio-locale-di-tipo-cache-con-bind/
+
+sudo apt-get install bind9 dnsutils
+sudo nano /etc/default/bind9
+	OPTIONS="-4 -u bind"
+sudo nano /etc/bind/named.conf.options
+# OpenDNS
+208.67.222.222, 208.67.220.220
+# CloudFare
+1.1.1.1, 1.0.0.1
+# DNS over HTTPs
+https://siamogeek.com/2019/04/dns-over-https/
+network.trr.mode = 2 o 3
+network.trr.uri = https://mozilla.cloudflare-dns.com/dns-query
+###########
+## DCMTK ##
+###########
+# Static version
+wget ftp://dicom.offis.de/pub/dicom/offis/software/dcmtk/dcmtk362/bin/dcmtk-3.6.2-linux-x86_64-static.tar.bz2
+# PatientName
+dcmdump $DCM +P 0010,0010
+
+###########
+## DICOM ##
+###########
+http://nifti.nimh.nih.gov/nifti-1/documentation/nifti1fields/nifti1fields_pages/qsform.html
+This method is intended to represent "scanner-anatomical" coordinates, which are often embedded in the image header (e.g., DICOM fields (0020,0032), (0020,0037), (0028,0030), and (0018,0050))
+
+##################
+## DICOMBROWSER ##
+##################
+wget ftp://ftp.nrg.wustl.edu/pub/DicomBrowser/DicomBrowser-1.5.2.tgz
+wget https://bitbucket.org/nrg/dicombrowser/downloads/DicomBrowser-1.7.0b5-bin-with-dependencies.jar
+# https://wiki.xnat.org/xnat-tools/dicomedit/dicomedit-4-2-language-reference
+DicomRemap -d anon.das -o /path/to/dest/ source/
+
+#########
+## DNF ##
+#########
+dnf update --exclude=maple,seamonkey,thunderbird,google-chrome-stable
+# list files in installed package
+dnf list | grep <package>
+dnf repoquery -l <package>
+
+###########
+## DPABI ##
+###########
+http://d.rnet.co/Restricted/DPABI_V2.0_151201.zip
+
+############
+## DOCKER ##
+############
+# https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-16-04
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+sudo apt-get update
+# Make sure you are about to install from the Docker repo instead of the default Ubuntu 16.04 repo:
+apt-cache policy docker-ce
+sudo apt-get install -y docker-ce
+sudo systemctl status docker
+##########
+## DPKG ##
+##########
+http://www.binarytides.com/apt-get-tutorial-package-management-ubuntu-commandline/
+
+
+#############
+## DROPBOX ##
+#############
+sudo apt-get remove dropbox
+sudo apt-get install nautilus-dropbox
+#############
+## DTIPREP ##
+#############
+DWIConvert --inputVolume 01011-t1w.nrrd --conversionMode NrrdToFSL --outputVolume testout.nii --outputBVectors testout.bvecs --outputBValues testout.bvals
+
+###############
+## exif-tool ##
+###############
+Install exiftool:
+sudo apt-get install libimage-exiftool-perl
+
+To read metadata:
+exiftool /tmp/my_photo.jpg
+
+To erase photo metadata:
+exiftool -all= /tmp/my_photo.jpg
+
+# change date
+exiftool -xmp:DateTimeOriginal="2005:10:23 20:06:34.33-05:00" foto.jpg
+ # if cluse
+ef -DateTimeOriginal -FileName -if '$DateTimeOriginal ge "2007:02:19"'  .
+
+#############
+## EDUROAM ##
+#############
+anonymous@inria.fr
+lantelmi
+PEAP MSCHV2
+
+#################
+## EXPLORE-DTI ##
+#################
+wget www.exploredti.com/ExploreDTI/Linux/64/ExploreDTI_v4.8.6.zip # standalone
+wget http://www.exploredti.com/ExploreDTI/Pcode/ExploreDTI_Pcode.zip
+export LD_LIBRARY_PATH="/home/luigi/matlab/Source/MD_cor_E/linux64:$LD_LIBRARY_PATH"
+sudo ln -s /home/luigi/matlab/ExploreDTI_v4.8.6/Source/MD_cor_E/linux64/libANNlib.so /usr/lib/libANNlib.so
+##############
+## FAIL2BAN ##
+##############
+https://www.digitalocean.com/community/articles/how-to-protect-ssh-with-fail2ban-on-ubuntu-12-04 
+sudo apt-get install fail2ban
+sudo cp /etc/fail2ban/jail.conf /etc/fail2ban/jail.local
+sudo nano /etc/fail2ban/jail.local
+sudo service fail2ban restart
+sudo iptables -n -L --line-numbers
+
+# to unban
+sudo iptables -D <chain> <chain-number>
+
+############
+## FFMPEG ##
+############
+# info
+ffprobe file.mp4
+ffmpeg -i file.mp4
+
+# https://launchpad.net/~mc3man/+archive/ubuntu/trusty-media
+add-apt-repository ppa:mc3man/trusty-media
+apt-get update
+apt-get dist-upgrade
+rm -r ~/.config/vlc
+
+# space cropping
+ffmpeg -i in.mp4 -filter:v "crop=width:height:x:y" out.mp4
+
+# time cropping
+ffmpeg -i videoIn.mp4 -ss 1:00 -to 2:00 -vn -acodec 'copy' audioOut.aac
+
+# normalize if not @ 0 dB
+ffmpeg -i file.aac -af "volumedetect" -f null /dev/null
+ffmpeg -i video.avi -af "volumedetect" -vn -sn -dn -f null /dev/null
+
+
+ffmpeg -i 01-A_Teardrop_To_The_Sea.flac -acodec aac -strict -2 01-A_Teardrop_To_The_Sea.aac
+# dmn : in windows use "Screen Recorder" to capture the screen
+ffmpeg -i dmn_pt13_.avi -qscale 0 -ss 0:12 -to 0:40 -filter:v "crop=633:846:1269:182,setpts=0.5*PTS" dmn_pt13.avi
+ffmpeg -i dmn_pt13_.avi -qscale 0 -filter:v "setpts=0.5*PTS" dmn_pt13s.avi
+
+# merge video audio
+ffmpeg -i VID_20170717_201300.mp4 -i STE-003.wav -c:v copy -c:a aac -strict experimental -map 0:v:0 -map 1:a:0 output.mp4
+ffmpeg -itsoffset 00:07.0 -i VID_20170717_201300.mp4 -i STE-003.wav -map 0:0 -map 1:0 -acodec aac -strict -2 -vcodec copy -ss 9.0 -to 3:42.0 output.mp4
+
+# concatenate
+ffmpeg -f concat -safe 0 -i mylist.txt -c copy output  # mylist.txt contains lines such as: file 'video.mp4'
+
+# video and audio from 2 different videos
+ffmpeg -i input_0.mp4 -i input_1.mp4 -c copy -map 0:v:0 -map 1:a:0 -shortest out.mp4
+
+# MP3
+ffmpeg -i IN.avi -vn -acodec libmp3lame -ar 48000 -ac 2 [-b:a 192k | -q:a 2] OUT.mp3
+
+# VOB vob
+cat *VOB > movie.vob
+ffmpeg -analyzeduration 100M -probesize 100M -i movie.vob  # find possible hidden tracks by analyzing not just few samples
+ffmpeg -i movie.vob movie.mp4  # default configuration used
+
+# Squeeze smartphone videos
+ffmpeg -i goodnight_moon.mp4 -c:v libx264 -crf 25 -c:a libmp3lame -ar 44100 -ac 1 -b:a 128k output.mp4	
+
+# Multiple subtitles
+ffmpeg -i Input.mp4 -i ita.srt -i eng.srt -i esp.srt -map 0:0 -map 0:1 -map 1 -map 2 -map 3 -c:v copy -c:a copy -c:s srt -metadata:s:s:0 language=Italian -metadata:s:s:1 language=English -metadata:s:s:2 language=Spanish Output.mkv
+
+# Multiple audio tracks
+ffmpeg -i Contagion.mp4 -i Contagion_ITA.mp4 -map 0:0 -map 1:1 -map 0:1 -c:v copy -c:a copy -metadata:s:a:0 language=Italian -metadata:s:a:1 language=French output.mkv
+
+# Grayscale
+-vf colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3
+# Seppia
+colorchannelmixer=.393:.769:.189:0:.349:.686:.168:0:.272:.534:.131
+
+##########
+## FIND ##
+##########
+# file older than
+find dir/ -type f ! -newer <reference> # -delete
+# sort my last modified
+find ./ -printf '%T+ %p\n' | sort -r | head
+find ./ -type f -exec stat -c "%y %n" {} + | sort -r | head
+# find + rsync
+find ./ -typr f -name "*xyz*" -print0 | rsync -avhP --files-from=- --from0 ./ $dest
+# permissions
+ find ./ -perm -2000 # set group id
+ find ./ -perm -4000 # set user id
+# regular expression
+find ./ -maxdepth 1 -regex './out_34-MRIT1-VO.*\|.*./template_34.*' -exec du -ch {} +
+find ./sub-0040*/ -type f -regex "\(.*_3DT1.nii.gz\|.*_3DT1_iso_acpc_brain.nii.gz\)"
+# find by size
+find ./ -type f -size +512k
+# fast loop over millions of files
+time find *.txt -print0 | while IFS= read -rd $'\0' i; do echo $i; done
+##############
+## FMRIPREP ##
+##############
+# Install DOCKER
+# Follow Instruction on website
+# pip install future
+
+# No underscores in subj id
+fmriprep-docker --fs-license-file $FREESURFER_HOME/license.txt [--anat-only  --longitudinal --fs-no-reconall --participant_label PARTICIPANT_LABEL '0040043MACL'] --work-dir <full path to WD> <full path to BIDS> <full path to OUT dir>
+#############
+## FIREFOX ##
+#############
+# about:config
+browser.sessionstore.interval 3600000 # https://www.servethehome.com/firefox-is-eating-your-ssd-here-is-how-to-fix-it/
+layout.css.devPixelsPerPx # standard zoom (-1 = default)
+network.proxy.type # 1 = manual
+network.proxy.socks 127.0.0.1
+network.proxy.socks_port 9999
+network.proxy.socks_remote_dns true
+
+#######################
+## IPTABLES FIREWALL ##
+#######################
+
+# port forwarding # http://serverfault.com/questions/326493/basic-iptables-nat-port-forwarding
+Esempio: Internet <--> 192.168.100.244:8081 <--> 192.168.100.243:8080
+echo "1" >  /proc/sys/net/ipv4/ip_forward 
+iptables -t nat -A PREROUTING -i eth0 -p tcp -d 192.168.100.244 --dport 8081 -j DNAT --to-destination  192.168.100.243:8080
+iptables -t nat -A POSTROUTING -o eth0 -j SNAT --to-source 5.6.7.8 # if source has static IP
+iptables -t nat -A POSTROUTING -j MASQUERADE # if source has dynamic IP
+iptables -t nat -L
+
+# to unban
+sudo iptables -D <chain> <chain-number>
+
+iptables -A INPUT -i eth0 -p tcp -s 192.168.100.0/24 --dport 22 -m state --state NEW,ESTABLISHED -j ACCEPT
+iptables -A OUTPUT -o eth0 -p tcp --sport 22 -m state --state ESTABLISHED -j ACCEPT
+
+iptables -A INPUT -i eth0 -p tcp --dport 80 -m state --state NEW,ESTABLISHED -j ACCEPT
+iptables -A OUTPUT -o eth0 -p tcp --sport 80 -m state --state ESTABLISHED -j ACCEPT
+
+##########################
+## FLASH PLAYER FIREFOX ##
+##########################
+cd $HOME/.mozilla/plugins
+ln -s $SOFTWARE_DIR/jdk/jre/lib/amd64/libnpjp2.so
+ln -s $SOFTWARE_DIR/flash_player/libflashplayer.so
+
+#########
+## FSL ##
+#########
+FSLVERSION='fsl-5.0.10'
+wget -c http://fsl.fmrib.ox.ac.uk/fsldownloads/fslinstaller.py
+activate python2.x
+python fslinstaller.py
+
+wget -c http://fsl.fmrib.ox.ac.uk/fsldownloads/${FSLVERSION}-centos6_64.tar.gz
+wget -c http://fsl.fmrib.ox.ac.uk/fsldownloads/md5sums/${FSLVERSION}-centos6_64.tar.gz.md5
+./fslinstaller.py -f ${FSLVERSION}-centos6_64.tar.gz -C `cat ${FSLVERSION}-centos6_64.tar.gz.md5` -d /usr/local/
+sudo ./fslinstaller.py
+sudo python fslinstaller.py -f fsl-5.0.10-centos6_64.tar.gz -C 064abae9083e69fafd114dedd9add465 -T md5 -d /home/luigi/Software/fsl-5.0.10 # the directory must not exists
+
+# To use FSLView please install the PNG12 and MNG libraries with: sudo yum install libpng12 libmng
+
+###########
+## FONTS ##
+###########
+sudo apt-get install libotf-bin
+mkdir ~/.fonts
+fc-cache -fv
+
+############
+## FREEDNS##
+############
+sudo apt-get install inadyn curl
+
+Open the url:
+http://freedns.afraid.org/dynamic/
+Login with your account
+Select the link Direct URL beside <your_host>.ignorelist.com
+Copy everything from the right of the ? in the address bar (alphanumeric string)
+
+Create configuration file of inadyn:
+Code:
+
+sudo gedit /etc/inadyn.conf
+
+And save this content:
+Code:
+
+--username <your_username>
+--password <your_password>
+--update_period 60000
+--forced_update_period 320000
+--alias <your_host>.ignorelist.com,alphanumeric string
+--background
+--dyndns_system default@freedns.afraid.org
+--syslog
+
+Add inadyn to crontab:
+Code:
+
+export EDITOR=gedit && sudo crontab -e
+
+Edit the file to add the following line:
+Code:
+
+@reboot /usr/sbin/inadyn
+
+Reboot your PC
+
+Wait 3 minutes
+
+Check if inadyn is running:
+Code:
+
+ps -A | grep inadyn
+
+Check inadyn behaviour:
+Code:
+
+more /var/log/messages |grep INADYN
+
+Check if your host is up:
+Code:
+
+ping <your_host>.ignorelist.com
+
+Done! 
+################
+## FreeSurfer ##
+################
+
+# CROSSECTIONAL
+recon-all -i file.nii.gz [-i file2.nii.gz] -s subjectname -all -hippo-subfields
+#TEMPLATE
+recon-all -base ${sub}_template -tp out_${sub}_T00_001 -tp out_${sub}_T06_001 -all
+#LONG
+recon-all -long out_11_002_VO_T02_MPRAGE_1 11_002_VO_MPRAGE_template -all -hippo-subfields
+
+lcg-info --vo 'VOMS:/vo.neugrid.eu*' --list-ce --attrs OS,OSRelease,TotalCPUs,FreeCPUs,RunningJobs,FreeJobSlots,WaitingJobs
+
+lcg-tags --ce ng-hug-server5.neuro.hcuge.ch --vo vo.neugrid.eu --list
+lcg-tags --ce ng-ki-server5.ki.se --vo vo.neugrid.eu --list
+lcg-info --vo VOMS:/vo.neugrid.eu\* --list-ce --query 'Tag=*VO-vo.neugrid.eu-freesurfer-5.1.0*'
+
+sudo apt-get install libjpeg62:i386
+sudo apt-get install libjpeg62
+
+# VOLUME
+
+
+###########
+## FSTAB ##
+###########
+# WIN/Linux mounts
+# For each user, run on windows:
+wmic useraccount where name='luigi' get sid
+# write .NTFS-3G/UserMapping
+luigi::$SID
+# mount
+/dev/deviceX /mountPoint ntfs-3g defaults 0 0
+/mountPoint/userX /home/userX none bind
+
+# davfs
+https://partage.inria.fr/alfresco/webdav/Sites/asclepios-meeting/documentLibrary /home/lantelmi/WEBDAV/partage.inria.fr/ davfs noauto,user,rw,uid=lantelmi,username=lantelmi 0 0
+
+#########
+## FTP ##
+#########
+apt-get install curlftpfs
+sudo curlftpfs -o allow_other -o user='lenitem@gmail.com:Lenitem2013' ftp.adrive.com ADRIVE/
+sudo curlftpfs -o allow_other -o user='eadc:PET_rules!' 193.204.145.150 EADC/
+
+sudo mount -t cifs //10.91.50.20/laboratorio\ lenitem/ -o username=lantelmi,uid=1004,gid=1004 ./FBF/
+sudo mount -t cifs //10.91.50.20/laboratorio\ lenitem/ -o username=mbocchetta,uid=1010,gid=1010 ./FBF/
+
+smbclient -L 10.100.212.24 -U funzionale
+gvfs-mount smb://10.100.212.24/D
+nautilus smb://10.100.212.24/D
+ls /run/user/1000/gvfs/smb-share\:server\=10.100.212.24\,share\=d/
+mount -o uid=1000,gid=1000,fmask=0022,dmask=0022 -t vmhgfs .host:/D MOUNT/D/
+
+# SERVER FTP
+http://wiki.ubuntu-it.org/Server/Ftp
+sudo /etc/init.d/vsftpd restart
+sudo gedit /etc/vsftpd.conf
+pam_service_name=ftp
+#local_enable=YES 
+#chroot_local_user=YES
+/etc/ftpusers
+
+allow_writeable_chroot=YES
+
+###########
+## GEANY ##
+###########
+http://geany.org/manual/#special-file-filetypes-common
+# filetypes.common
+[styling]
+white_space=0xff0000;0xf4f4f4;true;true
+
+#############
+## gnuplot ##
+#############
+cat << EOF
+set terminal png
+set output "test.png"
+set yrange [0:200e3]
+plot "<cat"
+EOF
+
+cat oneColum | gnuplot plot.gp
+##############
+## GOOGLECL ##
+##############
+install googlecl
+mkdir -p ~/.local/share/googlecl
+
+google youtube post -v -u luigi.antelmi --access=public|private|unlisted --category='Education' --title=$TITLE --summary=$SUMMARY h264mp3.avi
+
+#CALENDAR
+google calendar list --cal='labLENITEM'
+
+#########
+## GPG ##
+#########
+gpg --verify key.sig file
+# Try to grab the public key A524C53E, enter:
+gpg --keyserver pgpkeys.mit.edu --recv-key A524C53E
+
+##########
+## GREP ##
+##########
+remove lines
+sed -i "/\b\(cat\|rat\)\b/d" filename
+sed -i '/\b\(pippo\)\b/d' 
+The \b sets word boundaries and the d operation deletes the line matching the expression between the forward slashes. cat and rat are both being matched by the (one|other) syntax we apparently need to escape with backslashes.
+#########
+## HG  ##
+#########
+hg pull && hg update # to get the latest version
+hg tags # to view previous stable releases and tip
+hg update -r N # to update to revision number N
+
+
+###########
+## HUBIC ##
+###########
+hubiC login <email> <folder to synchronize>
+
+###########
+## ICONV ##
+###########
+iconv --from-code US-ASCII --to-code UTF8 --output 
+
+#################
+## IMAGEMAGICK ##
+#################
+# add text
+convert -pointsize 18 -fill white -draw "text 0,18 '$id'" ${id}_T1_GM_Jac.png test.jpg && eog test.jpg
+
+# IMAGE INFO
+identify -verbose rose.jpg
+convert -density 600 pg_0001.pdf -blur 2 -colorspace Gray -depth 1 -compress Group4 up.png
+
+# Human Brain Mapping
+# aprire le imag con gimp e togliere quell'alpha channel (Layer > Transparency > Remove Alpha Channel)
+convert -profile sRGB.icc <image in> -profile USWebCoatedSWOP.icc -colorspace cmyk -density 600 -geometry 3900x <image out>
+
+convert -negate <in> <out> # invert image
+
+convert -delay 150 -dispose 2 -geometry 800x496 -size 800x496 *.png oceandrain.gif
+convert +level-colors Firebrick, me.jpg oldme.jpg # Mark Zuckerburg could've saved a billion if he knew about ImageMagick.
+convert -fill "#FFFFFF" -opaque "#141414" -fuzz 20% <(curl -s -L http://bit.ly/nUKKfA ) illusion-fix.jpg # Replace dark grays with white
+convert -size 1280x720 plasma:fractal background.png # Create a 1280x720 color plasma image. Different each time.
+convert -rotate -90 sideways.jpg rightsideup.jpg
+
+convert A.eps -transparent white B.png # remove white
+
+-size 320x85 canvas:none -font Bookman-DemiItalic -pointsize 72
+
+# GIF
+convert -delay 0 -loop 0 -alpha set -dispose background *.png ani.gif
+convert -dispose background test-{59..135}.png ani.gif
+convert -crop 663X600+0+113 +repage dual.gif cropped.gif
+
+# morphing
+convert original/*.jpg -delay 20 -morph 10 new/img%03d.jpg
+
+# unsharp mask
+convert -unsharp 5.0x10+1.0+0.0 <input file> <output file>
+
+# PDF to Images
+pdftk *.pdf cat output whole.pdf
+
+pdftk whole.pdf burst
+
+gs -sDEVICE=pdfwrite -dNOPAUSE -dBATCH -dSAFER -dFirstPage=1 -dLastPage=4 -sOutputFile=outputT4.pdf T4.pdf
+gs -sDEVICE=pswrite -dNOCACHE -sOutputFile=- -q -dbatch -dNOPAUSE -dQUIET filename.ps -c quit | ps2pdf - "`echo filename.ps | cut -f1 -d'.'`"-nofont.pdf
+
+convert -density 600 in.pdf out.png
+convert -gravity NorthEast -crop 9650x6550+0+0 pg_0200.jpg trim.jpg
+
+# High compresison image to pdf
+convert image.gif -alpha off [ -monochrome | -colorspace Gray -depth 2 ]-compress Zip -quality 100 -units PixelsPerInch -density 600  image_deflate.pdf
+convert image.gif -alpha off -monochrome -compress Group4 -quality 100 -units PixelsPerInch -density 600  image_group4.pdf
+# histogram
+convert pg_0254.png  -format %c -depth 8  histogram:info:histogram_image.txt
+awk '{print $1}' histogram_image.txt | sed 's/://g' | gnuplot plot.gp
+# keep only black
+convert pg_0010.png -fill white -fuzz 50% +opaque "#000000" result.png
+# ALL IN ONE
+convert -density 600 IN.pdf -fill white -fuzz 50% +opaque "#000000"  -alpha off -monochrome -compress Group4 -quality 100 -units PixelsPerInch OUT.pdf
+
+# BRISS
+tool to crop pdf
+wget http://garr.dl.sourceforge.net/project/briss/release%200.9/briss-0.9.tar.gz
+java -Xms512m -Xmx4096m -jar briss-0.9.jar
+
+############
+## IMAGEJ ##
+############
+download from http://imagej.nih.gov/ij/download.html
+http://downloads.openmicroscopy.org/bio-formats/5.1.3/artifacts/bioformats_package.jar
+http://downloads.openmicroscopy.org/latest/bio-formats5.1/artifacts/bioformats_package.jar
+
+##############
+## INKSCAPE ##
+##############
+
+###########
+## INRIA ##
+###########
+# proxy
+https://istpac.inria.fr/pac/roc.pac
+
+# scanner dossier partagé
+cd /user/lantelmi/nas/scan
+# sudo mountcifs -U lantelmi sop-nas2b/partage
+# cd /uw/sop-nas2b/partage/asclepios/MFP
+
+# template presentations
+https://intranet.inria.fr/Actualite/Mise-a-jour-de-la-charte-graphique-Inria-et-nouveaux-modeles
+
+# FEDORA RDESKTOP-1.8.3
+
+# This release adds support \for Windows 2012 and Windows 2012 R2
+# \which fixes smart card redirection, mouse cursor and other minor
+# issues.
+# It also permits to \export the \local disk of your machine as a
+# share on a Windows server. You can \for example see your \local
+# homedir on the bise.inria.fr server as follows (instantiate
+# LOGIN to your login name):
+rdesktop -g 1600x1000 -u lantelmi@ad.inria.fr -r disk:LOGIN=$HOME bise.inria.fr &
+# The share on bise is viewed as: Ce PC > LOGIN sur NAME_OF_YOUR_MACHINE
+xfreerdp /u:login@ad.inria.fr /v:bise.inria.fr  # dnf install freerdp
+
+# Asclepios bibliography repository
+	Windows:  \\sop-nas2b\srv_asclepios\home\publication\conf\
+	Linux: /proj/asclepios/home/publication/conf/
+	MacOS: smb://sop-nas2b/srv_asclepios/home/publication/conf/
+
+# NEF CLUSTER
+# use scratch group in order to avoid backup
+chgrp scratch $DIR
+chmod g+s $DIR # every file creating under $DIR will be 'scratch'
+mkdir $DIR/temp # test: create a directory temp in $DIR and check the group owner
+
+# QUOTA
+sudo beegfs-ctl --getquota --uid lantelmi
+sudo beegfs-ctl --getquota --gid epione
+
+# vnc
+vncviewer -FullColor -geometry 1400x1024 -via srv-asclepios.inria.fr vnc-lantelmi:0
+
+########
+## IP ##
+########
+ip addr add dev eth0 192.168.1.41/24
+ip route add default via 192.168.1.1 dev eth0
+vim /etc/resolv.conf
+	search station
+	nameserver 192.168.1.1
+ip link set eth0 up
+ip addr show dev eth0
+
+#########
+## ISO ##
+#########
+
+genisoimage -o DATASETs.iso -R -J DATASETs/
+sudo mount -t iso9660 -o loop "<path>/image.iso" /mnt
+# MOUNT OVER FTP
+sudo curlftpfs -o allow_other -o user='USERNAME:PASSWORD' ftp.centroalzheimer.it MOUNTPOINT/
+
+# MOUNT OVER SSH
+sshfs -C -p $PORT $USER@$REMOTEHOST:$REMOTEDIR/ $LOCAL_MOUNT_POINT/
+fusermount -u $LOCAL_MOUNT_POINT/ # to unmount
+
+# clone
+1. Reading the block size and the volume size:
+isoinfo -d -i /dev/cdrom | grep -i -E 'block size|volume size' 
+Logical block size is: 2048
+Volume size is: 327867
+2. Running dd with the parameters for block size and volume size:
+dd if=/dev/cdrom of=test.iso bs=<block size from above> count=<volume size from above>
+
+
+##############
+## KVM/QEMU ##
+##############
+http://www.howtogeek.com/117635/how-to-install-kvm-and-create-virtual-machines-on-ubuntu/
+sudo apt-get install qemu-kvm libvirt-bin bridge-utils virt-manager
+sudo adduser $USER libvirtd # only people in libvirtd can use kvm
+virsh -c qemu:///system list
+virsh list --all
+virt-manager --connect qemu:///session
+# find ip of guests
+virsh domiflist <guest>
+
+qemu-img create -f qcow2 virtual.hd 8G
+qemu-img convert -o compat=0.10 -f vmdk -O qcow2 -c -p TurnKeyMySQL20120413-disk1.vmdk TurnKeyMySQL20120413-disk1.qcow2
+qemu-system-i386 -m 2048 -cdrom ./Documents/ISO/vista32bit.iso -boot d -monitor stdio [-no-acpi] temp/virtual.hd
+
+# remote connection
+spicec --host 127.0.0.1 --port 5901
+remote-viewer spice://127.0.0.1:5901
+
+# clone & backup $(date +%Y-%M-%d_%H:%M)
+cp --sparse=always IN.img OUT.img # only for raw files
+tar cfS xnat-1.6.4-server-disk1.img.tar xnat-1.6.4-server-disk1.img
+
+rsync --sparse # the first time, or use dd if=/dev/zero of=file.img bs=1 count=0 seek="$(bitesize of original file)"
+rsync --inplace # to update
+#qemu-img convert -f raw -O raw -S xxx /home/store/xnat_rete_ad/xnat-1.6.4-server-disk1.img 
+
+# http://www.dedoimedo.com/computers/kvm-clone.html
+kpartx -av /kvm/disk.raw
+
+##########
+## LAMP ##
+##########
+# https://www.digitalocean.com/community/tutorials/how-to-install-linux-apache-mysql-php-lamp-stack-on-ubuntu-14-04
+sudo apt-get install apache2 mysql-server php5-mysql
+sudo mysql_install_db
+sudo mysql_secure_installation
+sudo apt-get install php5 libapache2-mod-php5 php5-mcrypt
+sudo nano /etc/apache2/mods-enabled/dir.conf
+	It will look like this:
+	We want to move the PHP index file highlighted above to the first position after the DirectoryIndex specification, like this:
+	<IfModule mod_dir.c>
+		DirectoryIndex index.php index.html index.cgi index.pl index.xhtml index.htm
+	</IfModule>
+
+###########
+## LATEX ##
+###########
+texlive-latex-{base,recommended}
+# fedora
+dnf install texlive-scheme-basic
+###############
+## linuxbrew ##
+###############
+# dependencies
+sudo apt-get install build-essential curl git m4 ruby texinfo libbz2-dev libcurl4-openssl-dev libexpat-dev libncurses-dev zlib1g-dev
+
+git clone https://github.com/Homebrew/linuxbrew.git ~/.linuxbrew
+export PATH="$HOME/.linuxbrew/bin:$PATH"
+export MANPATH="$HOME/.linuxbrew/share/man:$MANPATH"
+export INFOPATH="$HOME/.linuxbrew/share/info:$INFOPATH"
+
+brew deps FORMULA
+brew remove
+############	
+## NETCAT ##
+############
+!! use nc.traditional
+
+http://www.terminally-incoherent.com/blog/2007/08/07/few-useful-netcat-tricks/
+# scan range of ports
+nc -v -w 1 localhost -z 1-9999
+
+# file transfer
+nc -lp 1337 > file.zip # on destination machine
+nc -w 1 10.48.2.40 1337 < file.zip # on source
+
+# web server
+while true; do nc.traditional -l -p 80 -q 1 < error.html; done
+
+################
+## MYSQL/PSQL ##
+################
+# prompt mysql
+mysql -u root --password=xyz -e 'select * from SUBJ' DBname
+
+SELECT SUBJID, Sex, DX, AGE, IMID, TP, avg(LX) as lx, avg(RX) as rx FROM `raw` where SUBJID in (SELECT distinct SUBJID FROM `raw`) AND DX like 'AD' and TP in ('SCR','REP') group by subjid
+
+SELECT * FROM (SELECT SUBJID, Sex, DX, AGE, IMID, TP, avg(LX) as lx, avg(RX) as rx FROM `raw` where SUBJID in (SELECT distinct SUBJID FROM `raw`) AND DX like 'AD' and TP in ('SCR','REP') group by subjid) A JOIN `raw` B ON A.SUBJID=B.SUBJID WHERE B.TP like 'M24'
+
+psql -c "UPDATE avid_crfScrPaz07anamnpat SET terocc=-2 where terocc=99"
+
+
+###########
+## MOUNT ##
+###########
+#ISO
+sudo mount -t iso9660 -o loop "<path>/image.iso" /mnt
+
+# nano /etc/fstab: mount on ram:
+tmpfs /tmp tmpfs size=512m 0 0
+
+#FTP
+sudo curlftpfs -o allow_other -o user='USERNAME:PASSWORD' ftp.centroalzheimer.it MOUNTPOINT/
+
+#INTERNAL NETWORK
+sudo mount -t cifs //10.91.50.20/laboratorio\ lenitem/ -o username=lantelmi,uid=1004,gid=1004 ./FBF/
+sudo mount -t cifs //192.168.17.134/D/ -o username=antelmi.l,uid=1002,gid=1002 ./MOUNT/D/
+
+# WINZOZZ PROBLEMS
+Mounting a Windows 7 (SMB) share on Linux gives us a “Remote I/O error” like below:
+mount error(121): Remote I/O error
+Refer to the mount.cifs(8) manual page (e.g. man mount.cifs)
+
+Solution:
+vers=1.0 default
+vers=2.0 vista, server2008
+vers=2.1 win7, server2008R2
+vers=3.0 win8, server2012
+
+OR
+
+regedit
+HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management\LargeSystemCache - set it to 1
+HKLM\SYSTEM\CurrentControlSet\Services\LanmanServer\Parameters\Size - set it to 3
+restart the “Server” service in services.msc
+Reference: https://boinst.wordpress.com/2012/03/20/mount-cifs-cannot-allocate-memory-mounting-windows-share/
+
+# MOUNT OVER FTP
+sudo curlftpfs -o allow_other -o user='USERNAME:PASSWORD' ftp.centroalzheimer.it MOUNTPOINT/
+
+# MOUNT OVER SSH
+sshfs -C -p 22040 martina@localhost:/home/martina/FBF/ /home/martina/FBF/
+
+# MOUNT VMWARE SHARED FOLDER
+sudo mount -t vmhgfs -o uid=1000,gid=1000,fmask=0022,dmask=0022 .host:/D /home/luigi/MOUNT/D
+
+# qcow2
+http://www.randomhacks.co.uk/how-to-mount-a-qcow2-disk-image-on-ubuntu/
+sudo modprobe nbd max_part=8
+sudo qemu-nbd --connect=/dev/nbd0 /mnt/kvm/wordpress-sites.qcow2
+sudo fdisk /dev/nbd0 -l
+sudo mount /dev/nbd0p1 /mnt/somepoint/
+sudo umount /mnt/somepoint/
+sudo qemu-nbd --disconnect /dev/nbd0
+
+#############
+## MPLAYER ##
+#############
+# youtube streaming
+curl --ciphers RC4-SHA $(youtube-dl -g https://www.youtube.com/watch?v=WVl3BJoEoAU)  -o file.avi
+mplayer file.avi	
+curl + mplayer on a second terminal to dump	
+
+mplayer <stream> -dumpstream -dumpfile file.avi
+-cache 8192
+
+# DVD player
+# https://help.ubuntu.com/community/RestrictedFormats/PlayingDVDs
+sudo apt-get install libdvdread4 && sudo /usr/share/doc/libdvdread4/install-css.sh
+mplayer dvdnav://1 -mouse-movements -dvd-device /media/DR_HOUSE_S1_D1/
+
+# fix suftitles on video
+mencoder temp.mp4 -sub message_GBF.srt -o testWsub.avi -ovc x264 -oac mp3lame
+mencoder -vf rotate=2 -o output.avi -oac pcm -ovc lavc input.mov
+# or use openShot program
+mencoder temp.mp4 -sub message_GBF.srt -o testWsub.mp4 -oac mp3lame -ovc lavc -of mpeg
+# play webcam
+mplayer -cache 128 -tv driver=v4l2:width=640:height=480 -vo xv tv://
+
+############
+## MRICRO ##
+############
+wget http://www.mccauslandcenter.sc.edu/mricro/mricro/mricrox.tar.gz
+sudo mkdir /usr/local/mricro
+sudo tar xzf mricrox.tar.gz -C /usr/local/mricro
+apt-get install ia32-libs
+cd /usr/local/mricro/mricro && ldd libborqt-6.9-qt2.3.so && install missing libraries
+sudo ln -s /usr/lib/i386-linux-gnu/libjpeg.so.8.0.2 /usr/lib/i386-linux-gnu/libjpeg.so.62	
+
+#################
+## NEUGRID/N4U ##
+#################
+# Available N4U CE nodes:
+lcg-info --vo 'VOMS:/vo.neugrid.eu*' --list-ce --attrs OS,OSRelease,TotalCPUs,FreeCPUs,RunningJobs,FreeJobSlots,WaitingJobs
+
+# List the software packages available on the N4U grid:
+lcg-info --list-ce --attr Tag --vo 'VOMS:/vo.neugrid.eu*'
+
+# List the software packages available on a specific N4U node:
+lcg-info --vo 'VOMS:/vo.neugrid.eu*' --list-ce --query 'CE=*srv5.fatebenefratelli.it*' --attrs Tag | grep -E 'CE:|neugrid'
+
+# List the N4U nodes where a specific software package is available:
+lcg-info --vo 'VOMS:/vo.neugrid.eu*' --list-ce --query 'Tag=*VO-vo.neugrid.eu-freesurfer-5.1.0*'
+
+# To check the tags available on a CE:
+lcg-tags --ce ng-maat-server9.gnubila.fr --list 
+
+# EXPRESSLANE
+export EXPRESSLANE_DEBUG=1 # debug mode
+export EXPRESSLANE_VERBOSE=1 # verbose mode
+
+## software on seed resources:
+lcg-info --vo 'VO:vo.neugrid.eu' --list-ce --query 'Tag=*VO-vo.neugrid.eu-cmtk-20140723*' --attrs TotalCPUs,FreeCPUs,RunningJobs
+
+# Delete files in folder:
+for i in $(lfc-ls $PANDORA_GRID_HOME/adaboost/output); do echo $i; lcg-del -a lfn:$PANDORA_GRID_HOME/adaboost/output/$i & sleep 0.1; done
+
+# PERUSAL:
+- To enable the perusal mechanism two parameters need to be added to your .ext file:
+
+PerusalFileEnable=true
+PerusalTimeInterval=1000
+
+
+- Submit your job
+- Execute the following command to enable the functionality:
+
+glite-wms-job-perusal --set -f myOutputFile1 -f myOutputFile2 JOB_ID
+
+
+- Execute the following command to retrieve the output:
+
+glite-wms-job-perusal --get -f myOutputFile1 -f myOutputFile2 --dir MyOutputFolder JOB_ID
+(If the folder does not exist it will be created automatically)
+
+
+#################
+## NMAP ZENMAP ##
+#################
+(http://www.cyberciti.biz/networking/nmap-command-examples-tutorials/)
+# quickly scan network port 
+nmap -sP 193.204.145.1/24
+nmap -T5 192.168.1.0/24
+# HOST DOWN
+nmap -v -sn -n 193.204.145.1/24
+# all info
+nmap -A 193.204.145.1
+
+############
+## NVIDIA ##
+############
+ solve refresh problems
+sudo apt-get install compizconfig-settings-manager and then run ccsm. Use advanced search to change the following settings, then log out and log back in.
+
+    Texture filter: best
+    Lighting: checked
+    Detect refresh rate: unchecked
+    Refresh rate 200
+    Sync to vblank: unchecked
+
+#########
+## OAR ## https://wiki.inria.fr/ClustersSophia/Hardware#_Dell_T640_GPU_nodes
+#########
+# --property=""
+gpu='YES'
+gpucapability>='5.2'
+cluster='dellt630gpu'
+host='nefgpu20.inria.fr'
+dedicated='epione'
+
+# -l
+/nodes=1/core=1,walltime=0:30:0
+/gpunum=1
+
+
+# associate JOBID to COMMAND
+oarstat -u lantelmi | grep effort | awk '{print $1}' | while read i; do oarstat -fj $i | grep -E 'command|Job_Id:' | rev | cut -d' ' -f1 | rev | tr '\n' ' '; echo; done | tee submitted.txt
+# Interactive mode for 30 minutes
+oarsub -I -l /nodes=1/core=1,walltime=0:30:0
+oarsub -I -t besteffort --property="(gpu='YES' AND cluster='dellt630gpu' and dedicated='epione')" -l /gpunum=1,walltime=01:00:00
+oarsub -I -t besteffort --property="(gpu='YES' AND gpucapability='5.2' AND ibswitch='ibswc2nef' AND cluster='dellt630gpu' and cpuarch='x86_64' and dedicated='asclepios')" -l /gpunum=1,walltime=12:00:00
+
+# reservation mode
+oarsub --property="(host='nefgpu29.inria.fr' AND cluster='dellt640gpu')" -l /gpunum=1,walltime=24:00:00 -r "2020-01-20 17:21:00"
+
+# node	cluster	gpucapability
+dedicated	host	cluster	capability	cpu
+mathneuro	nefgpu01	dellr730gpu	3.7	Xeon 2600 # eddy_cuda OK (Matrox Electronics Systems Ltd. G200eR2 rev 01)
+_NO_	nefgpu03	carrigpu	2.0	Xeon 2667
+_NO_	nefgpu04
+_NO_	nefgpu05	dellc6100gpu	2.0	Xeon 2667 # eddy_cuda OK (ASPEED Technology, Inc. ASPEED Graphics Family rev 10)
+_NO_	nefgpu06	dellc6100gpu	2.0	Xeon 2667
+
+epione	nefgpu07	dellt630gpu	5.2	Xeon 2400 # 4x GPU GTX1080Ti (eddy_cuda OK )
+zenith	nefgpu08	dellt630gpu 	6.1	Xeon 2400 # eddy_cuda doesn't work
+graphdeco	nefgpu09	dellt630gpu	5.2	Xeon 2200
+stars	nefgpu10	dellt630gpu	5.2	Xeon 2200
+stars	nefgpu11	dellt630gpu	6.1	Xeon 2200
+stars	nefgpu12	dellt630gpu	6.1	Xeon
+graphdeco	nefgpu13	dellt630gpu	6.1	Xeon 2200
+stars	nefgpu14	dellt630gpu	6.1	Xeon
+stars	nefgpu15	dellt630gpu	6.1	Xeon
+epione	nefgpu16	dellt630gpu	6.1	Xeon 2200 # 4x GPU GTX1080Ti + 2x (E5-2630v4 CPU 10 cores 20 threads) + 128GB RAM + 1.6TB SSD disk under /local
+zenith	nefgpu17	dellt630gpu	6.1	xeon
+_NO_	nefgpu18	dellt630gpu	6.1	xeon
+_NO_	nefgpu19	dellt630gpu	6.1	xeon
+_NO_	nefgpu20	dellt630gpu	6.1	xeon
+stars	nefgpu21	dellt630gpu	6.1	xeon
+stars	nefgpu22	dellt630gpu	6.1	xeon
+tititane-epitome	nefgpu23        dellt630gpu     6.1     xeon
+
+epione	nefgpu24	dellt640gpu	6.1	xeon	# 4x GPU GTX1080Ti
+zenith	nefgpu25	dellt640gpu 	6.1
+wimmics	nefgpu26	dellt640gpu 	6.1
+zenith	nefgpu27	dellt640gpu 	7.5	xeon
+graphdeco	nefgpu28	dellt640gpu 	6.1	xeon
+epione	nefgpu29	dellt640gpu	6.1	xeon
+_NO_	nefgpu30	dellt640gpu	6.1	xeon
+_NO_	nefgpu31	dellt640gpu	6.1	xeon
+_NO_	nefgpu32	dellt640gpu	6.1	xeon
+_NO_	nefgpu40	esc8kgpu	6.1	xeon
+
+_NO_	nefgpu42	dellr740gpu	6.1	xeon
+_NO_	nefgpu43	dellr740gpu	6.1	xeon
+_NO_	nefgpu44	dellr740gpu	6.1	xeon
+_NO_	nefgpu45	dellr740gpu	6.1	xeon
+
+nef001-006	dellr815 	opteron 2200
+nef007-008	dellc6145	opteron 2300
+# Submit
+oarsub -S "./script.sh var1 var2 ..."
+oarsub -S <./script.sh> --array-param-file <args.txt>
+oarsub -n <name> -t <queue> --property="(gpu='YES' AND gpucapability>='5.2')" -S <./script.sh> --array-param-file <args.txt>
+
+# Request
+oarsub -r "$(date '+%Y-%m-%d %H:%M:%S' --date='+1 week')"
+oarsub -r "2018-12-29 18:30:00" -S $PWD/freesurfer_autorecon1_wrapper.sh
+oarsub --property="(host='nefgpu24.inria.fr' AND cluster='dellt640gpu')" -l /gpunum=1,walltime=24:00:00 -r "2018-11-19 08:59:00"
+
+# 200GB to reserve a full node :
+oarsub -p 'mem > 200000' -l /nodes=1
+
+## OARSTAT
+oarstat --gantt "$(date '+%Y-%m-%d %H:%M:%S'),$(date '+%Y-%m-%d %H:%M:%S' --date='+1 week')"
+oarstat --accounting "$(date '+%Y-%m-%d'), $(date '+%Y-%m-%d' --date='+1 week')"
+oarstat --JSON | grep owner | ggSortUniqSort
+
+# find asclepios members
+ls -l $HOME/.. | grep asclepios | awk '{print $3}' | sort | uniq | sort -V | tr '\n' '|'
+
+# QUOTA
+quota -s -u lantelmi
+ls -l $HOME/.. | grep epione | awk '{print $3}' | sort | uniq | sort -V | while read i; do sudo beegfs-ctl --getquota --uid $i | grep $i; done >> quotas && sed 's/|/\ /g' quotas | sort -k 4,4 -k 3,3 -r
+
+# Find the Cluster Master in the last month
+oarstat --accounting "$(date '+%Y-%m-%d' --date='-1 month'), $(date '+%Y-%m-%d')" | sort -r -k7 | awk '{print $0" \t Days "$7/86400" \t Years "$7/86400/365 }' | grep_asclepios
+
+# matlab licences used
+/opt/matlab2015a/etc/glnxa64/lmutil lmstat -c /opt/matlab2015a/licenses/network.lic -a | grep_asclepios | grep lantelmi
+
+# filesystem
+https://wiki.inria.fr/ClustersSophia/User_Guide_new_config#.E2.80.82Disk_space_management
+/home  # Each user has a home directory in the /home storage. You can check you current disk occupation with the quota -s command
+/data  # A distributed scalable file system is available under /data for several usages
+/local (dedicated)   # SSD performance
+/local/tmp (common)  # SSD performance
+/tmp  # node local hard disk
+/dev/shm  # RAM (memory) filesystem
+
+# ENVIRONMENT
+OARCONFFILE=/etc/oar/oar.conf
+OARDIR=/usr/lib/oar
+OARDO_UID=888
+OARDO_USER=oar
+OARUSER=oar
+OARXAUTHLOCATION=/usr/bin/xauth
+OAR_ARRAYID=5362183
+OAR_ARRAYINDEX=1
+OAR_ARRAY_ID=5362183
+OAR_ARRAY_INDEX=1
+OAR_CPUSET=/oar/lantelmi_5362183
+OAR_FILE_NODES=/var/lib/oar/5362183
+OAR_JOBID=5362183
+OAR_JOB_ID=5362183
+OAR_JOB_NAME=
+OAR_JOB_WALLTIME=1:0:0
+OAR_JOB_WALLTIME_SECONDS=3600
+OAR_KEY=1
+OAR_NODEFILE=/var/lib/oar/5362183
+OAR_NODE_FILE=/var/lib/oar/5362183
+OAR_O_WORKDIR=/data/asclepios/share/private/insight_bkp/PROCESSED/FREESURFER
+OAR_PROJECT_NAME=default
+OAR_RESOURCE_FILE=/var/lib/oar/5362183
+OAR_RESOURCE_PROPERTIES_FILE=/var/lib/oar/5362183_resources
+OAR_STDERR=OAR.5362183.stderr
+OAR_STDOUT=OAR.5362183.stdout
+OAR_USER=lantelmi
+OAR_WORKDIR=/data/asclepios/share/private/insight_bkp/PROCESSED/FREESURFER
+OAR_WORKING_DIRECTORY=/data/asclepios/share/private/insight_bkp/PROCESSED/FREESURFER
+SUDO_COMMAND=OAR
+
+#############
+## OPENSSL ##
+#############
+#encrypt with des3 algo
+openssl des3 < decrypted_file > encrypted_file
+# decript
+openssl des3 -d < encrypted_file > decrypted_file
+
+############
+## OXYGEN ##
+############
+
+##############
+## PASSWORD ##
+##############
+Ad alta entropia: http://siamogeek.com/2013/12/generatore-password-command-line/
+strings /dev/urandom | tr -c -d '\!-~' | dd bs=1 count=1k 2>/dev/null | sed -r 's/(.{16})/\1\n/g' ; echo
+len=20; tr -dc A-Za-z0-9_ < /dev/urandom | head -c ${len} | xargs
+
+###########
+## PDFTK ##
+###########
+
+#edit metadata
+pdftk book.pdf dump_data output report.txt
+nano report.txt
+pdftk book.pdf update_info report.txt output bookcopy.pdf
+
+pdftk A=full-pdf.pdf cat A12-15 output outfile_p12-15.pdf
+
+EXAMPLES
+       Collate scanned pages
+         pdftk A=even.pdf B=odd.pdf shuffle A B output collated.pdf
+         or if odd.pdf is in reverse order:
+         pdftk A=even.pdf B=odd.pdf shuffle A Bend-1 output collated.pdf
+
+       Decrypt a PDF
+         pdftk secured.pdf input_pw foopass output unsecured.pdf
+
+       Encrypt a PDF using 128-bit strength (the default), withhold all permissions (the default)
+         pdftk 1.pdf output 1.128.pdf owner_pw foopass
+
+       Same as above, except password 'baz' must also be used to open output PDF
+         pdftk 1.pdf output 1.128.pdf owner_pw foo user_pw baz
+
+       Same as above, except printing is allowed (once the PDF is open)
+         pdftk 1.pdf output 1.128.pdf owner_pw foo user_pw baz allow printing
+
+       Join in1.pdf and in2.pdf into a new PDF, out1.pdf
+         pdftk in1.pdf in2.pdf cat output out1.pdf
+         or (using handles):
+         pdftk A=in1.pdf B=in2.pdf cat A B output out1.pdf
+         or (using wildcards):
+         pdftk *.pdf cat output combined.pdf
+
+       Remove 'page 13' from in1.pdf to create out1.pdf
+         pdftk in.pdf cat 1-12 14-end output out1.pdf
+         or:
+         pdftk A=in1.pdf cat A1-12 A14-end output out1.pdf
+
+       Apply 40-bit encryption to output, revoking all permissions (the default). Set the owner PW to 'foopass'.
+         pdftk 1.pdf 2.pdf cat output 3.pdf encrypt_40bit owner_pw foopass
+
+       Join two files, one of which requires the password 'foopass'. The output is not encrypted.
+         pdftk A=secured.pdf 2.pdf input_pw A=foopass cat output 3.pdf
+
+       Uncompress PDF page streams for editing the PDF in a text editor (e.g., vim, emacs)
+         pdftk doc.pdf output doc.unc.pdf uncompress
+
+       Repair a PDFs corrupted XREF table and stream lengths, if possible
+         pdftk broken.pdf output fixed.pdf
+
+       Burst a single PDF document into pages and dump its data to doc_data.txt
+         pdftk in.pdf burst
+
+       Burst a single PDF document into encrypted pages. Allow low-quality printing
+         pdftk in.pdf burst owner_pw foopass allow DegradedPrinting
+
+       Write a report on PDF document metadata and bookmarks to report.txt
+         pdftk in.pdf dump_data output report.txt
+
+       Rotate the first PDF page to 90 degrees clockwise
+         pdftk in.pdf cat 1E 2-end output out.pdf
+
+       Rotate an entire PDF document to 180 degrees
+         pdftk in.pdf cat 1-endS output out.pdf
+
+#####################
+## PLEXMEDIASERVER ##
+#####################
+sudo nano /etc/default/plexmediaserver
+PLEX_MEDIA_SERVER_USER = $USER
+restart
+
+################
+## POSTGRESQL ##
+################
+# https://fedoraproject.org/wiki/PostgreSQL
+sudo dnf install postgresql{,-server,-libs,-contrib} pgadmin3
+sudo systemctl enable postgresql # enable at boot
+mkdir /var/run/postgresql && chown postgres: /var/run/postgresql && systemctl start postgresql # enable when needed
+# The database initialization could be done using following command. It creates the configuration files postgresql.conf and pg_hba.conf
+sudo postgresql-setup initdb
+# Or on Fedora 22 and later:
+sudo postgresql-setup --initdb --unit postgresql
+
+# create user
+su - postgres
+psql
+postgres=# \password postgres # It might be good idea to add password for postgres user
+postgres=# CREATE USER lantelmi WITH PASSWORD 'lantelmi';
+postgres=# CREATE DATABASE mnc3 OWNER lantelmi;
+
+
+
+sudo su - postgres
+
+
+###########
+## PUTTY ##
+###########
+on windows allow to connect to rdp (system... properties...)
+putty local 3389 to remote xxx
+
+#########
+## PPA ##
+#########
+sudo add-apt-repository ppa:gwibber-daily/ppa
+
+############
+## PYTHON ##
+############
+sudo apt-get install python-pip
+ipython python-numpy python-scipy python-nibabel python-matplotlib python-sklearn
+pip install nilearn
+
+
+#mayavi problem solved here: https://github.com/enthought/mayavi/issues/43
+export ETS_TOOLKIT=wx 
+ipython --gui=wx
+-----------------------------------
+import numpy
+from mayavi.mlab import *
+def test_quiver3d():
+    x, y, z = numpy.mgrid[-2:3, -2:3, -2:3]
+    r = numpy.sqrt(x ** 2 + y ** 2 + z ** 4)
+    u = y * numpy.sin(r) / (r + 0.001)
+    v = -x * numpy.sin(r) / (r + 0.001)
+    w = numpy.zeros_like(z)
+    obj = quiver3d(x, y, z, u, v, w, line_width=3, scale_factor=1)
+    return obj
+test_quiver3d()
+-----------------------------------
+
+# FILE MANAGEMENT
+# open and read txt file
+with open('list.txt') as f:
+    for line in f:
+        l = os.listdir(line.rstrip('\n'))
+        l.sort()
+        print(l[-2])
+
+# write / overwrite
+with open(experiment + '.stats', 'w') as stats_file:
+	header = 'n_channels,n_feats,gen_lat_dim,gen_snr,gen_idx,depth,N_obs,fit_lat_dim,has_converged,epochs,last_loss,avg100_loss,train_loss,test_loss'
+	row = [str(eval(col)) for col in header.split(',')]
+	stats_file.write(header + '\n')
+	stats_file.write(','.join(row) + '\n')
+
+# mkdir
+if not os.path.exists(train_dir):
+	os.makedirs(train_dir)
+# empty recursively and create new dir
+import shutil
+if os.path.exists(dirname):
+	shutil.rmtree(dirname)
+	os.makedirs(dirname)
+# file creation
+from pathlib import Path
+if not Path(model.model_name+'.done').exists():
+	Path(model.model_name + '.running').touch()
+	os.remove(model.model_name + '.running')
+	Path(model.model_name+'.done').touch()
+
+
+##############################
+## CONDA MINICONDA / PYTHON ##
+##############################
+# It can be downloaded here for all platforms: https://conda.io/miniconda.html
+# If you're running linux and like the command-line (who doesn't?), you can type this in a shell:
+wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh
+bash Miniconda3-latest-Linux-x86_64.sh
+# After miniconda installation, you should be able to install everything we need (probably more, but I haven't precisely determined what we'll talk about; anyway these are useful tools) for the meeting by typing this in a terminal:
+conda create -n py36 python=3.6 pip numpy scipy jupyter scikit-learn pandas pytorch torchvision
+# This will install a python 3.6 environment because unfortunately not all the tools I'd like to discuss are yet (easily) available for python 3.6. The latest steps to get it all working should be:
+source activate py36
+conda install vtk # facoltative
+conda install -c https://conda.anaconda.org/simpleitk SimpleITK # facoltative
+
+jupyter notebook
+
+conda info --envs
+# rename environment
+conda create --name new_name --clone old_name
+conda remove --name old_name --all # or its alias: `conda env remove --name old_name
+
+# update a package
+# conda update -n ENVIRONMENT PACKAGE(S) -c CHANNEL
+conda update -n py36 pytorch torchvision -c pytorch
+
+############
+## POLKIT ##
+############
+sudo nano /etc/polkit-1/localauthority/50-local.d/disable-shutdown.pkla
+
+[Disable Shutdown, etc.]
+Identity=unix-user:*
+Action=org.freedesktop.login1.power-off;org.freedesktop.login1.power-off-multiple-sessions;org.freedesktop.login1.reboot;org.freedesktop.login1.reboot-multiple-sessions;org.freedesktop.login1.suspend;org.freedesktop.login1.suspend-multiple-sessions;org.freedesktop.login1.hibernate;org.freedesktop.login1.hibernate-multiple-sessions
+ResultAny=no
+ResultInactive=no
+ResultActive=no
+
+############################
+## QPDF (pdftk on Fedora) ##
+############################
+# merge pages
+qpdf --empty --pages cerfa0.pdf 1 cerfa1.pdf 1 cerfa2.pdf 1 -- out.pdf
+qpdf --empty --pages /home/lantelmi/Documents/blank.pdf 1 fantasie.pdf 1-10 -- out.pdf
+qpdf --empty --pages *.pdf -- out.pdf
+
+#######
+## R ##
+#######
+# Compile from source
+./configure [--prefix=${SOFTWAREDIR}/R --enable-utf8 --with-pcre1 --enable-R-shlib] #  The last option is to enable a library needed by RStudio
+make
+
+## RSTUDIO
+export RSTUDIO_WHICH_R=${SOFTWAREDIR}/R-4.0.3/bin/R && rstudio
+
+##############
+## RDESKTOP ##
+##############
+# rdesktop prerequisites
+start > computer > properties > remote settings > allow rdp
+#firewall > allow TCP connection on port 3389 
+# find DNS on ubuntu
+nmcli dev list iface <interfacename> | grep IP4
+rdesktop -u user -p password -g WxH
+
+# INRIA FEDORA RDESKTOP-1.8.3
+
+# This release adds support \for Windows 2012 and Windows 2012 R2
+# \which fixes smart card redirection, mouse cursor and other minor
+# issues.
+# It also permits to \export the \local disk of your machine as a
+# share on a Windows server. You can \for example see your \local
+# homedir on the bise.inria.fr server as follows (instantiate
+# LOGIN to your login name):
+
+rdesktop -g 1600x1000 -u lantelmi@ad.inria.fr -r disk:LOGIN=$HOME bise.inria.fr &
+
+# The share on bise is viewed as: Ce PC > LOGIN sur NAME_OF_YOUR_MACHINE
+
+############
+## RENAME ##
+############
+# Fedora
+rename \.gz \.zip *_AV45.gz
+
+############
+## RENICE ##
+############
+ps aux | grep -i mat | grep soft
+renice -n 5 -p $($HOME/Dropbox/PROGETTI/script/miscellanea/findchildren.sh $PID)
+
+################
+## RESOLUTION ##
+################
+# change monitor resolution
+cvt 1920 1080 60
+xrandr --query | grep connected
+
+xrandr --newmode "1024x768_60.00"   63.50  1024 1072 1176 1328  768 771 775 798 -hsync +vsync
+xrandr --addmode Virtual1 "1024x768_60.00"
+xrandr --output Virtual1 --mode "1024x768_60.00"
+
+xrandr --newmode "1280x1024_60.00"  109.00  1280 1368 1496 1712  1024 1027 1034 1063 -hsync +vsync
+xrandr --addmode Virtual1 "1280x1024_60.00"
+xrandr --output Virtual1 --mode "1280x1024_60.00"
+
+xrandr --newmode "1920x1080_60.00"  173.00  1920 2048 2248 2576  1080 1083 1088 1120 -hsync +vsync
+xrandr --addmode Virtual1 "1920x1080_60.00"
+xrandr --output Virtual1 --mode "1920x1080_60.00"
+
+xrandr --newmode "1912x980_60.00"  155.50  1912 2032 2232 2552  980 983 993 1017 -hsync +vsync
+xrandr --addmode Virtual1 "1912x980_60.00"
+xrandr --output Virtual1 --mode "1912x980_60.00"
+###########
+## RSYNC ##
+###########
+--info=progress2 --no-i-r # global progress
+--bwlimit=KBPS
+
+# https://calomel.org/rsync_tips.html
+rsync -avrz --stats --human-readable --partial --progress --rsh="ssh -c arcfour -l luigi" 193.204.145.80:'/home/luigi/VirtualBox\ VMs/WINZOZZ/WINZOZZ.vdi' ./
+
+rsync -avrz --partial  lenitem@gmail.com@rsync.adrive.com:'Progetti/Grant_ministeriali/RicFin/2011/network\ forme\ autosomiche' ./
+
+# sparse files
+https://gergap.wordpress.com/2013/08/10/rsync-and-sparse-files/
+rsync --sparse # first time
+rsync --inplace # if file is existing
+
+#ADRIVE
+scp -P 22040 -r * luigi@localhost:/home/luigi/FBF/Progetti/Svizzera/ComitatoEtico/ADNIplus/
+rsync -avhP ./ lenitem@gmail.com@sftp.adrive.com:Progetti/Svizzera/ComitatoEtico/ADNIplus/
+rsync -avhP -e 'ssh -c arcfour' EADC_PET_img2dcm.zip lenitem@gmail.com@rsync.adrive.com:scambio/luigi/EADC_PET_img2dcm.zip
+
+rsync -av --files-from=/path/to/files.txt / /destination/path/
+
+# FBF BACKUP
+# local copy on queen fedora; then sync with miranda
+rsync -avhP --include '*/' --include '*.pdf' --include '*.doc*' --include '*.xls*' --include '*.ppt*' --exclude '*' /home/luigi/FBF/Progetti /media/Disk2/FBF/
+rsync -avhP -e 'ssh -C -c arcfour' /media/Disk2/FBF/Progetti luigi@193.204.145.150:/home/luigi/FBF/
+--log-file="/usr/local/rsync/rsync.log.$(date +%Y%m%d%H%M%S)"
+
+###########
+## SAMBA ##
+###########
+sudo smbpasswd -a $USER
+mkdir /home/$USER/share
+sudo cp /etc/samba/smb.conf{,.bkp}
+sudo nano /etc/samba/smb.conf
+cat << EOF 
+[<folder_name>]
+path = /home/<user_name>/<folder_name>
+available = yes
+valid users = <user_name>
+read only = no
+browseable = yes
+public = yes
+writable = yes
+EOF
+sudo service smbd restart
+testparm
+
+#########
+## SAR ##
+#########
+System activity
+sudo apt-get install sysstat
+awk '/kbmemfree/,/Average/' $(ls -tr sar*) | grep -v Average  | grep -v kbmemused | awk '{print $4}' > kbmemused.txt
+
+############
+## SCREEN ##
+############
+http://aperiodic.net/screen/quick_reference
+# start a new screen session with session name
+screen -S <name>
+# Rename a session
+Ctrl+a, : sessionname YOUR_SESSION_NAME Enter
+# list running sessions/screens
+screen -ls
+# attach to session name
+screen -r <name>
+# the "ultimate attach" (Attaches to a screen session. If the session is attached elsewhere, detaches that other display. If no session exists, creates one. If multiple sessions exist, uses the first one.) 
+screen -dRR
+# detach
+C-a d
+# detach and logout (quick exit)
+C-a D D
+# split horizontally
+c-a S
+#remove current region
+C-a X
+
+################
+## SCREENSHOT ##
+################
+xwininfo  # to get $WINDOWID
+import -window $WINDOWID image.png
+import -crop 140x20+750+150 -monochrome -window 0x1a00010 $(date +%Y-%m-%d_%H:%M:%S).png
+
+#####################
+## SERVER ANALYSIS ##
+#####################
+# https://siamogeek.com/2016/01/analisi-iniziale-server-linux/
+date
+uname -a
+lspci
+ps ax
+df -h
+mount
+w
+dmesg
+free -h
+top
+vmstat 1
+mpstat -P ALL 1
+pidstat 1
+iostat -xz 1
+sar -n DEV 1
+cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_frequencies
+#########
+## SOX ##
+#########
+swiss army knife for audio files
+sudo apt-get install sox libsox-fmt-mp3
+sudo apt-get install lame
+
+lame --decode music.mp3 - | play -
+play music.mp3
+play ./Documents/PROGETTI/CHINCARINI/ANDREA.mp3 overdrive 
+play -t sl -r 44.1k - < /dev/urandom # noise
+
+play -q -n synth sine F2 sine C3 remix - fade 0 4 .1 norm -4 bend 0.5,2399,2 fade 0 4.0 0.5 &
+# record from mic
+sox -t alsa default recording.wav silence 1 0.1 5% 1 1.0 5%
+# double volume
+sox -v 2.0 foo.wav bar.wav
+# streaming
+ssh XXX.XX.XX.XXX "sox -t alsa plughw:1,0 -p" | sox - -tcoreaudio # plughw:1,0 is an Alsa device name on that machine
+#########
+## SGE ##
+#########
+http://scidom.wordpress.com/category/computing/parallel-computing/
+
+###########
+## SKYPE ##
+###########
+https://help.ubuntu.com/community/Webcam
+# test cam with cheese or "vlc v4l2:///dev/video0"
+sudo apt-get install libv4l-0:i386
+# launch skype:
+env LD_PRELOAD=/usr/lib/i386-linux-gnu/libv4l/v4l1compat.so skype
+
+############
+## SLICER ##
+############
+download from web
+sudo tar xzf Slicer-4.5.0-1-linux-amd64.tar.gz -C /usr/local/
+cd /usr/local/
+sudo ln -s Slicer-4.5.0-1-linux-amd64/ Slicer
+expor
+#########
+## SPM ##
+#########
+wget http://www.fil.ion.ucl.ac.uk/spm/download/restricted/eldorado/spm12.zip
+# Standalone
+wget http://www.fil.ion.ucl.ac.uk/spm/download/restricted/utopia
+
+#########
+## SSH ##
+#########
+http://www.howtogeek.com/howto/linux/keep-your-linux-ssh-session-from-disconnecting/
+http://prasadlinuxblog.wordpress.com/2012/09/13/what-is-the-difference-between-ssh_config-and-sshd_config/
+
+sudo systemctl start sshd.service
+
+# SPEED UP http://puppetlabs.com/blog/speed-up-ssh-by-reusing-connections
+mkdir ~/.ssh/sockets
+nano ~/.ssh/config
+Host *
+ControlMaster auto
+ControlPath ~/.ssh/sockets/%r@%h-%p
+ControlPersist 600
+
+# show fingerprint of current host
+ssh-keygen -l -f /etc/ssh/ssh_host_rsa_key
+
+# socks proxy tunneling
+ssh -D 0.0.0.0:1080 -N localhost
+
+through firefox: about:config create string network.security.ports.banned.override set value 22
+#########
+## TAR ##
+#########
+sudo apt-get install lbzip2 pigz pbzip2
+export TAR_OPTIONS="--use-compress-program=pbzip2"
+tar -cjf --use-compress-program=pbzip2 myfile.tar.bz2 mysubdir/
+tar -c fileToCompress | pbzip2 -c > outName.tbz2
+# from file list
+tar -cvf allfiles.tar --files-from mylist.txt
+
+tar -x -f bfiles.tar --wildcards --no-anchored 'b*' --strip-components=NUMBER -C /target/directory
+tar xjvf 02-MRIT1-PT-001-T00-001.long.base_T00-T06_02-MRIT1-PT-001.tar.bz2 --wildcards --no-anchored '*stats/'
+
+pbzip2 -dc 02-MRIT1-PT-001-T00-001.long.base_T00-T06_02-MRIT1-PT-001.tar.bz2 | tar xf - --wildcards --no-anchored '*stats/'
+!! i file non compressi con pbzip2 non possono essere decompressi in multithread
+
+pbzip2 -dkc file.tar.bz2 | tar xf - -C EXTRACTION_DIR --wildcards --no-anchored '*stats/' '*mri/orig.mgz'
+# compress and send
+tar czf - -C /path/to/source files-and-folders | ssh user@target-host "cat - > /path/to/target/backup.tar.gz"
+tar -c hubiC | pbzip2 -c | ssh hug "cat - > /home/pandora_user9/test.tar.bz2"
+
+# split files
+tar cvzf - dir/ | split -b 200MB - sda1.backup.tar.gz. # -b 4294967295 for FAT32 fs
+tar cjf - /cvmfs/neugrid.egi.eu/software/x86_64/leap-2013/ | split -b 4294967295 - ${JobName}.tar.bz2.
+tar -c FOTO | pbzip2 -c | split -b 4294967295 - FOTO.tar.bz2.
+cat sda1.backup.tar.gz.* | tar xzvf - # to recompose
+#################
+## THUNDERBIRD ##
+#################
+The account settings are in Tools/account setting/.
+Under the email account go to the security page to associate your certificate with that account.
+
+Also, click on the view certificate and check which CA has issued your cert.
+Then in the Authorities tab, look for the CA, edit and make sure that you checked at least: this certificate can identify mail users.
+
+# ZIMBRA
+    courrier entrant
+        type de serveur: IMAP
+        adresse: zimbra.inria.fr port 993
+        login et mot de passe ildap
+        sécurité: SSL/TLS, mot de passe normal
+    courrier sortant
+        serveur smtp.inria.fr port 587 (ou 25 mais seulement en interne)
+        sécurité: STARTTLS, mot de passe normal
+        login et mot de passe ildap
+# ZIMBRA CalDAV
+	https://zimbra.inria.fr/dav/lantelmi/Calendar
+	https://zimbra.inria.fr/dav/luigi.antelmi@inria.fr/Calendar
+
+# GMAIL
+	user: full email
+	imap.gmail.com port 993 SSL/TLS OAuth2
+	smtp.gmail.com port 465 SSL/TLS OAuth2
+# INRIA
+	user: luigi.antelmi@inria.fr (imap) lantelmi (smtp)
+	zimbra.inria.fr port 993 SSL/TLS Normal password auth
+	smtp.inria.fr port 587 STARTTLS normal passwd auth
+# UCA
+	user: al717678@etu.unice.fr (imap) luigi.antelmi@etu.univ-cotedazur.fr (smtp)
+	outlook.office365.com port 993 SSL/TLS nurmal passwd auth
+	smtp.unice.fr port 465 SSL/TLS normal passwd auth
+
+#############
+## TORRENT ##
+#############
+http://katproxy.com/
+md5(quertyuiop)-eb@gmail.com
+
+###################
+## TRANSFER TEST ##
+###################
+dd if=/dev/urandom of=test.iso bs=1MB count=1000
+
+###############
+## TUXGUITAR ##
+###############
+sudo apt install tuxguitar tuxguitar-alsa tuxguitar-jsa tuxguitar-oss
+after this, go to Tools->Settings->Sound and select Gervill as Midi Port
+########
+## HG ##
+########
+hg id # current version
+hg tags # other versions
+hg update tagname
+
+#########
+## GIT ##
+#########
+http://www.linux.com/learn/tutorials/796387-beginning-git-and-github-for-linux-users/
+################################################################################
+# SUBMODULES
+git submodule add https://github.com/chaconinc/DbConnector
+git commit -am 'added DbConnector module'
+# To clone the main project with the submodule
+git clone --recursive https://github.com/chaconinc/MainProject
+# To update the submodule
+git fetch && git merge  # in the submodule directory
+
+################################################################################
+# PUSH to 2 REMOTES
+# https://gist.github.com/rvl/c3f156e117e22a25f242
+# 
+# Assume an "origin" remote already exists (it's the one you cloned from)
+# 1. Create an empty repository on github
+# 2. add it as a remote named "ggbioing" (the user of the account so you know to you will push
+git remote add ggbioing git@github.com:ggbioing/our-secret-stash.git
+# 3. Set up the push urls
+git remote set-url --add --push origin https://gitlab.inria.fr/asclepios/our-secret-stash.git
+git remote set-url --add --push origin git@github.com:ggbioing/our-secret-stash.git
+# 4. check it out
+git remote show origin
+# to undo: remove origin push to new remote + remove remote
+git remote set-url --delete origin git@github.com:ggbioing/our-secret-stash.git
+git remote remove ggbioing
+################################################################################
+
+# Create a branch
+# Before creating a new branch, pull the changes from upstream. Your master needs to be up to date.
+git pull
+# Create the branch on your local machine and switch in this branch
+git checkout -b [name_of_your_new_branch]
+# Push the branch on remote
+git push origin [name_of_your_new_branch]
+
+# Rename a branch
+git checkout $OLD_BRANCH_NAME
+git branch -m $NEW_BRANCH_NAME
+git push origin :$OLD_BRANCH_NAME $NEW_BRANCH_NAME
+git push --set-upstream origin $NEW_BRANCH_NAME
+
+# delete branch locally
+git branch -d localBranchName
+# delete branch remotely
+git push origin --delete remoteBranchName
+
+## Frequently Used Commands
+git add <newfile>
+git commit -m <message>
+git push
+
+
+## GLOBAL SET UP #
+git config --list
+git config --global user.name "Luigi Antelmi"
+git config --global user.email "luigi.antelmi@gmail.com"
+git config --global push.default simple
+git config --global http.proxy http://192.168.100.62:8080
+git config --global https.proxy https://192.168.100.62:8080
+git config --global url."https://".insteadOf git://
+git config --global color.ui "auto"
+git config --global core.editor "vim"
+git config --global credential.helper cache
+git config --global credential.helper 'cache --timeout=3600'
+git config --global http.postBuffer 524288000 # for big files
+
+unset SSH_ASKPASS # add to .bashrc
+
+# Create a repo on github
+# Connect github with local repo
+git init
+git remote add origin https://github.com/username/myproject.git
+
+## Create a repo on bitbucket and connect local repo
+#  Set up your local directory
+mkdir /path/to/your/project
+cd /path/to/your/project
+git init
+git remote add origin https://ggbioing@bitbucket.org/ggbioing/rete-ad.git
+#  Create your first file, commit, and push
+echo "Luigi Antelmi" >> contributors.txt
+git add contributors.txt
+git commit -m 'Initial commit with contributors'
+git push -u origin master
+
+# change remote url
+git remote set-url origin git@gitlab.inria.fr:epione_ML/mcvae.git
+
+##################
+## GITLAB INRIA ##
+##################
+# Command line instructions
+# Git global setup
+git config user.name "ANTELMI Luigi"
+git config user.email "luigi.antelmi@inria.fr"
+# Create a new repository
+git clone https://lantelmi@gitlab.inria.fr/asclepios_ML/tutorials.git
+cd tutorials
+touch README.md
+git add README.md
+git commit -m "add README"
+git push -u origin master
+# Existing folder
+cd existing_folder
+git init
+git remote add origin https://lantelmi@gitlab.inria.fr/asclepios_ML/tutorials.git
+git add .
+git commit
+git push -u origin master
+# Existing Git repository
+cd existing_repo
+git remote add origin https://lantelmi@gitlab.inria.fr/asclepios_ML/tutorials.git
+git push -u origin --all
+git push -u origin --tags
+
+#########
+## VIM ##
+#########
+# movements {mov}
+w      # until end of word
+iw     # inner word (all the word the cursor is into)
+aw     # as iw but include leading and trailing spaces
+0 or ^ # begin of line
+$      # end of line
+tx     # till character x
+fx     # till find character x
+
+# jumps
+G      # jump to end of file
+gg or 1G # jump at the beninning
+nG # jump to line 'n'
+H # High of the screen
+M # Middle of the screen
+L # Lower part of the screen
+
+# commands
+gU{mov} # Uppercase
+gu{mov} # lowercase
+g~{mov} # toggle between upper and lower case.
+
+y{mov}  # copy (yonk) see movements
+yy or Y # copy current line
+d       # cut (delete)
+p       # paste after the cursor
+P       # paste before the cursor
+# split
+C-w v # vertical split
+C-w S # horizontal split
+C-w C-w # to switch b/w windows
+C-w q # to close
+################
+## VIRTUALBOX ##
+################
+virtualbox list vms
+virtualbox startvm $VMSNAME --type headless
+
+##############
+## VMPLAYER ##
+##############
+mount -t vmhgfs -o uid=1001,gid=1002,fmask=0022,dmask=0022 .host:/D /home/risonanza/MOUNT/D
+
+#########
+## VPN ##
+#########
+Fortinet client https://hadler.me/linux/forticlient-sslvpn-deb-packages/
+besta https://151.99.166.62:10443/
+route -n
+sudo route del default
+sudo route add -host 192.168.100.244 gw 10.30.0.105 dev ppp0
+
+############
+## WEBDAV ##
+############
+install davfs2
+mkdir ~/WEBDAV
+# sudo
+mount.davfs http://hbps1.chuv.ch/community/share/ ~/WEBDAV -o rw,uid=$USER,username=guest
+mount.davfs https://owncloud.icm-institute.org/remote.php/webdav/ /data/lantelmi/mnt/WEBDAV -o rw,uid=lantelmi,username=luigi.antelmi@inria.fr
+mount -t davfs https://owncloud.icm-institute.org/remote.php/webdav/ /data/lantelmi/mnt/WEBDAV -o rw,uid=lantelmi,username=luigi.antelmi@inria.fr
+mount -t davfs https://partage.inria.fr/alfresco/webdav/Sites/asclepios-meeting/documentLibrary /home/lantelmi/WEBDAV/partage.inria.fr/ -o rw,uid=lantelmi,username=lantelmi
+https://partage.inria.fr/alfresco/webdav/Sites/asclepios-meeting/documentLibrary /home/lantelmi/WEBDAV/partage.inria.fr/ davfs noauto,user,rw,uid=lantelmi,username=lantelmi 0 0
+
+###########
+## XARGS ##
+###########
+define a function myFun() {}
+export -f myfun
+ls -1 *.dcm  | xargs -P0 -n1 bash -c 'myFun $@' _{}
+cat list | xargs -P4 -n1 -I% bash nifti2dcm.sh %
+
+# multiple arguments
+
+################
+## YOUTUBE-DL ##
+################
+# formats available
+youtube-dl -F https://www.youtube.com/watch?v=nnB1wTBggow
+youtube-dl -x --audio-format mp3 --audio-quality 0  https://www.youtube.com/watch?v=yleB8fUXudw
+youtube-dl -f 171 https://www.youtube.com/watch?v=DxwEVKe6eWk
+
+##########
+## WGET ##
+##########
+https://www.thegeekstuff.com/2009/09/the-ultimate-wget-download-guide-with-15-awesome-examples/
+
+# download
+wget --continue -O saveName.iso http://ftp.ussg.iu.edu/linux/ubuntu-releases/5.10/ubuntu-5.10-install-i386.iso
+# mirroring
+wget -m --no-parent
+# save entire site
+wget --recursive --no-clobber --page-requisites --html-extension --convert-links --restrict-file-names=windows --domains bbcmicro.co.uk -e robots=off --no-parent http://bbcmicro.co.uk/index.php
+
+#############
+## WINZOZZ ##
+#############
+Win\Sys32\sethc
+net localgroup administrators $username /add | /delete
+net localgroup "utenti desktop remoto" $username /add | /delete
+net user administrator /active:yes
+
+# check infos
+net user antelmi.l /domain
+# change password
+net user  loginid * /domain
+#########
+## ZIP ##
+#########
+zip STATS/csv.zip -@ < csvlist
+
+###########################################
+## http://cfenollosa.com/misc/tricks.txt ##
+###########################################
+I have marked with a * those which I think are absolutely essential
+Items for each section are sorted by oldest to newest. Come back soon for more!
+
+BASH
+* In bash, 'ctrl-r' searches your command history as you type
+- Input from the commandline as if it were a file by replacing 
+  'command < file.in' with 'command <<< "some input text"'
+- '^' is a sed-like operator to replace chars from last command 
+  'ls docs; ^docs^web^' is equal to 'ls web'. The second argument can be empty.
+* '!!:n' selects the nth argument of the last command, and '!$' the last arg
+  'ls file1 file2 file3; cat !!:1-2' shows all files and cats only 1 and 2
+- More in-line substitutions: http://tiny.cc/ecv0cw http://tiny.cc/8zbltw
+- 'nohup ./long_script &' to leave stuff in background even if you logout
+- 'cd -' change to the previous directory you were working on
+- 'ctrl-x ctrl-e' opens an editor to work with long or complex command lines
+* Use traps for cleaning up bash scripts on exit http://tiny.cc/traps
+* 'shopt -s cdspell' automatically fixes your 'cd folder' spelling mistakes
+* Add 'set editing-mode vi' in your ~/.inputrc to use the vi keybindings 
+  for bash and all readline-enabled applications (python, mysql, etc)
+
+
+PSEUDO ALIASES FOR COMMONLY USED LONG COMMANDS
+- function lt() { ls -ltrsa "$@" | tail; }
+- function psgrep() { ps axuf | grep -v grep | grep "$@" -i --color=auto; }
+- function fname() { find . -iname "*$@*"; }
+- function remove_lines_from() { grep -F -x -v -f $2 $1; }
+  removes lines from $1 if they appear in $2
+- alias pp="ps axuf | pager"
+- alias sum="xargs | tr ' ' '+' | bc" ## Usage: echo 1 2 3 | sum
+- function mcd() { mkdir $1 && cd $1; }
+
+
+VIM
+- ':set spell' activates vim spellchecker. Use ']s' and '[s' to move between
+  mistakes, 'zg' adds to the dictionary, 'z=' suggests correctly spelled words
+- check my .vimrc http://tiny.cc/qxzktw and here http://tiny.cc/kzzktw for more
+
+
+TOOLS
+* 'htop' instead of 'top'
+- 'ranger' is a nice console file manager for vi fans
+- Use 'apt-file' to see which package provides that file you're missing
+- 'dict' is a commandline dictionary
+- Learn to use 'find' and 'locate' to look for files
+- Compile your own version of 'screen' from the git sources. Most versions
+  have a slow scrolling on a vertical split or even no vertical split at all
+* 'trash-cli' sends files to the trash instead of deleting them forever. 
+  Be very careful with 'rm' or maybe make a wrapper to avoid deleting '*' by
+  accident (e.g. you want to type 'rm tmp*' but type 'rm tmp *')
+- 'file' gives information about a file, as image dimensions or text encoding
+- 'sort | uniq' to check for duplicate lines
+- 'echo start_backup.sh | at midnight' starts a command at the specified time
+- Pipe any command over 'column -t' to nicely align the columns
+* Google 'magic sysrq' to bring a Linux machine back from the dead
+- 'diff --side-by-side fileA.txt fileB.txt | pager' to see a nice diff
+* 'j.py' http://tiny.cc/62qjow remembers your most used folders and is an 
+  incredible substitute to browse directories by name instead of 'cd' 
+- 'dropbox_uploader.sh' http://tiny.cc/o2qjow is a fantastic solution to 
+  upload by commandline via Dropbox's API if you can't use the official client
+- learn to use 'pushd' to save time navigating folders (j.py is better though)
+- if you liked the 'psgrep' alias, check 'pgrep' as it is far more powerful
+* never run 'chmod o+x * -R', capitalize the X to avoid executable files. If
+  you want _only_ executable folders: 'find . -type d -exec chmod g+x {} \;'
+- 'xargs' gets its input from a pipe and runs some command for each argument
+* run jobs in parallel easily: 'ls *.png | parallel -j4 convert {} {.}.jpg'
+- grep has a '-c' switch that counts occurences. Don't pipe grep to 'wc -l'.
+
+
+NETWORKING
+- Dont know where to start? SMB is usually better than NFS for most cases.
+- If you use 'sshfs_mount' and suffer from disconnects, use 
+  '-o reconnect,workaround=truncate:rename'
+- 'python -m SimpleHTTPServer 8080' or 'python3 -mhttp.server localhost 8080'
+  shares all the files in the current folder over HTTP. 
+- 'ssh -R 12345:localhost:22 server.com "sleep 1000; exit"' forwards 
+  server.com's port 12345 to your local ssh port, even if you machine 
+  is not externally visible on the net. 
+  Now you can 'ssh localhost -p 12345' from server.com and you will 
+  log into your machine. 
+  'sleep' avoids getting kicked out from server.com for inactivity
+* Read on 'ssh-agent' to strenghten your ssh connections using private keys, 
+  while avoiding typing passwords every time you ssh.
+- 'socat TCP4-LISTEN:1234,fork TCP4:192.168.1.1:22' forwards your port
+  1234 to another machine's port 22. Very useful for quick NAT redirection.
+- Some tools to monitor network connections and bandwith:
+  'lsof -i' monitors network connections in real time
+  'iftop' shows bandwith usage per *connection*
+  'nethogs' shows the bandwith usage per *process*
+* Use this trick on .ssh/config to directly access 'host2' which is on a private 
+  network, and must be accessed by ssh-ing into 'host1' first
+  Host host2
+      ProxyCommand ssh -T host1 'nc %h %p'
+  	  HostName host2
+* Pipe a compressed file over ssh to avoid creating large temporary .tgz files
+  'tar cz folder/ | ssh server "tar xz"' or even better, use 'rsync'
+* ssmtp can use a Gmail account as SMTP and send emails from the command line.
+  'echo "Hello, User!" | mail user@domain.com' ## Thanks to Adam Ziaja.
+  Configure your /etc/ssmtp/ssmtp.conf:
+      root=***E-MAIL***
+      mailhub=smtp.gmail.com:587
+      rewriteDomain=
+      hostname=smtp.gmail.com:587
+      UseSTARTTLS=YES
+      UseTLS=YES
+      AuthUser=***E-MAIL***
+      AuthPass=***PASSWORD***
+      AuthMethod=LOGIN
+      FromLineOverride=YES
+
+                                     -~-
+
+(CC) by-nc, Carlos Fenollosa <carlos.fenollosa@gmail.com>
+Retrieved from http://cfenollosa.com/misc/tricks.txt
+Last modified: Fri Feb 28 07:18:39 CET 2014
