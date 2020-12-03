@@ -2,11 +2,18 @@ set encoding=utf-8
 set number
 set hlsearch
 set spell spelllang=en_us
+set splitbelow
+set splitright
 highlight LineNr ctermfg=grey
 set statusline="%f%m%r%h%w [%Y] [0x%02.2B]%< %F%=%4v,%4l %3p%% of %L"
 colorscheme industry
 highlight SpellLocal ctermbg=5
 
+" Navigation
+nnoremap <C-J> <C-W><C-J>
+nnoremap <C-K> <C-W><C-K>
+nnoremap <C-L> <C-W><C-L>
+nnoremap <C-H> <C-W><C-H>
 
 """"Vundle"""
 set nocompatible
@@ -25,6 +32,7 @@ Plugin 'kien/ctrlp.vim'
 Plugin 'Lokaltog/powerline', {'rtp': 'powerline/bindings/vim/'}
 Plugin 'jnurmine/Zenburn'
 Plugin 'altercation/vim-colors-solarized'
+Plugin 'tpope/vim-fugitive'
 
 call vundle#end()
 filetype plugin indent on
