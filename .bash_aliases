@@ -31,7 +31,7 @@ alias whatIsMyIp='dig +short myip.opendns.com @resolver1.opendns.com && curl ipi
 alias grep_ip="grep -E '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}'"
 alias win2linuxFileNames="prename 's/ /_/g' * && prename 's/_-_/-/g' * && prename 's/__/_/g' *"
 alias skype='env LD_PRELOAD=/usr/lib/i386-linux-gnu/libv4l/v4l1compat.so skype'
-alias resource='source ~/.bashrc'
+alias resource='source ~/.bash_profile'
 alias monitor_off='xset dpms force off'
 alias nano='vim'
 alias wget='wget --continue'
@@ -117,9 +117,9 @@ EOF
 alias franceinfo='mplayer http://direct.franceinfo.fr/live/franceinfo-midfi.mp3'
 alias franceBleuAzur='mplayer https://direct.francebleu.fr/live/fbazur-midfi.mp3'
 alias isoradio='mplayer -af scaletempo https://icestreaming.rai.it/6.mp3'
-alias radiouno='mplayer -af scaletempo rtsp://live.media.rai.it/broadcast/radiouno.rm'
-alias radiodue='mplayer -af scaletempo rtsp://live.media.rai.it/broadcast/radiodue.rm'
-alias radiotre='mplayer -af scaletempo rtsp://live.media.rai.it/broadcast/radiotre.rm'
+alias radiouno='mplayer -af scaletempo http://icestreaming.rai.it/1.mp3'
+alias radiodue='mplayer -af scaletempo http://icestreaming.rai.it/2.mp3'
+alias radiotre='mplayer -af scaletempo http://icestreaming.rai.it/3.mp3'
 alias rts-1ere='mplayer -af scaletempo http://stream.srg-ssr.ch/m/la-1ere/aacp_96'
 alias rockNrollRadio='mplayer http://94.23.67.20:8000'
 alias martiniInTheMorning='mplayer http://mitm.digistream.info:8052/'

@@ -6,70 +6,6 @@ test Regular Expressions http://gskinner.com/RegExr/
 network configuration
 https://help.ubuntu.com/10.04/serverguide/network-configuration.html
 
-########
-## 7z ##
-########
-7z a bookcopy.pdf.7z bookcopy.pdf
-7z d file.x.7z
-# folder
-tar -c <folder> | 7z a -si <folder>.tar.7z
-
-
-#####################
-## USER MANAGEMENT ##
-#####################
-# System user: no password login or home
-sudo useradd --system <user>
-sudo usermod -L <user> # lock to prevent logging
-# Without a home directory
-sudo useradd myuser
-# With home directory
-sudo useradd -m myuser
-
-sudo passwd myuser
-
-Then set the shell
-sudo usermod -s /bin/bash myuser
-
-Heres the command I almost always use:
-NEWUSER=  && sudo useradd -d /home/$NEWUSER -s /bin/bash -m $NEWUSER
-
-######################
-## GROUP MANAGEMENT ##
-######################
-# setting the folder /temp as 'scratch'
-chgrp scratch temp/
-# every file creating under temp will be 'scratch'
-chmod g+s temp/
-
-# add user to a group
-groupadd $GROUP
-getent group $GROUP # check if group exist
-sudo useradd -d /var/ftp/IT-biomarkapd -s /sbin/nologin -m IT-biomarkapd
-usermod -a -G $GROUP $USER
-adduser $USER $GROUP [e.g. sudo]
-
-echo -n IT-biomarkapd | md5sum
-01845cd31bb33c36a2e50c87cea3c90c
-
-# vsftp "no delete" rigths
-useradd -d /var/vsftp/ASL -s /usr/sbin/nologin -m brescia
-usermod -a -G asl brescia
-
-##########
-## ANTs ##
-##########
-git clone git://github.com/stnava/ANTs.git
-mkdir antsbin && cd antsbin
-sudo apt-get install gcc g++ zlib1g-dev
-ccmake ../ANTs
-press c [confiure] t [toggle to advanced and turn off] and g [generate]
-make -j 4
-
-1. to run the scripts, you need to copy the Scripts/* to antsbin/bin/
-2. set the ANTSPATH to point to the antsbin/bin/ directory. e.g. in your profile add:
-ANTSPATH=/home/myname/mycode/antsbin/bin/
-
 #########
 ## APT ##
 #########
@@ -88,16 +24,6 @@ Acquire::ftp::proxy "ftp://192.168.100.62:8080/";
 install aspell aspell-fr aspell-en
 aspell check [options] fichier
 aspell check --lang=fr $HOME/.aspell.txt
-
-##########
-## ADNI ##
-##########
-# adni merge on R
-install.packages("Hmisc")
-install.packages("/path/to/ADNIMERGE_0.0.1.tar.gz", repos = NULL, type = "source")
-library("ADNIMERGE")
-help(package = "ADNIMERGE")
-?adas
 
 ############
 ## avconv ##
@@ -231,69 +157,10 @@ gnome-screenshot  --delay=2
 # Show most common words in filenames
 ls | tr '[[:punct:][:space:]]' '\n' | grep -v "^\s*$" | sort | uniq -c | sort -bn
 
-###########
-## CONDA ##
-###########
-conda update -n base conda
-
-conda info --envs
-conda env create -f environment.yml
-conda list
-conda env remove --name myenv
-conda env export > environment.yml
-
-##########
-## CRON ##
-##########
-http://jeff.loiselles.com/?p=5
-# DAEMON SCRIPT
-#!/bin/bash
-while [ 1 -eq 1 ]; do
-# do some stuff
-sleep 5
-done
-# CRON SCRIPT
-#!/bin/bash
-OUTPUT=`ps -ef | grep ‘[b]ash_daemon\.sh’`
-if [ “$OUTPUT” ]
-then
-echo running
-else
-/home/jeff/bin/bash_daemon.sh
-fi
-# edit crontab
-* * * * * /home/jeff/bin/bash_cron.sh 	> /dev/null 2>&1
-
-# dropbox backup
-7 23 * * *	rsync -av --delete /home/luigi/Dropbox /home/luigi/BACKUPS/Dropbox/daily/
-37 23 * * 0	rsync -av --delete /home/luigi/Dropbox /home/luigi/BACKUPS/Dropbox/weekly/
-1 22 1 * *	tar -c /home/luigi/Dropbox | /home/luigi/.linuxbrew/bin/pbzip2 -c > /home/luigi/BACKUPS/Dropbox/monthly_$(/bin/date +\%F).tar.bz2
-
-# http://www.cyberciti.biz/faq/linux-execute-cron-job-after-system-reboot/
-
 ##########
 ## CUDA ##
 ##########
 module purgei && module load cuda/10.0 cudnn/7.4-cuda-10.0
-
-##########
-## CURL ##
-##########
-# check HTTP response code
-if [[ $(curl -s -o /dev/null -I -w "%{http_code}" http://biobank.ctsu.ox.ac.uk/crystal/index.cgi) == "3"?? ]] && echo "redirection"
-# use proxy
-curl --proxy http://192.168.100.62:8080 "http://surfer.nmr.mgh.harvard.edu/fswiki/MatlabRuntime?action=AttachFile&do=get&target=runtime2012bLinux.tar.gz" -o "runtime2012b.tar.gz"
-# sharepoint
-curl --ntlm -u DOMAIN/user https://sharepoint.domain.com/path/to/file
-
-##########
-## DATE ##
-##########
-sudo dpkg-reconfigure tzdata
-# behind proxy
-sudo date -s "$(curl -sD - google.com | grep '^Date:' | cut -d' ' -f3-)"
-# epoch + nanoseconds
-date +%s%N
 
 ########
 ## DD ##
@@ -328,18 +195,10 @@ wget ftp://dicom.offis.de/pub/dicom/offis/software/dcmtk/dcmtk362/bin/dcmtk-3.6.
 dcmdump $DCM +P 0010,0010
 
 ###########
-## DICOM ##
+# every file creating under temp will be 'scratch'## DICOM ##
 ###########
 http://nifti.nimh.nih.gov/nifti-1/documentation/nifti1fields/nifti1fields_pages/qsform.html
 This method is intended to represent "scanner-anatomical" coordinates, which are often embedded in the image header (e.g., DICOM fields (0020,0032), (0020,0037), (0028,0030), and (0018,0050))
-
-##################
-## DICOMBROWSER ##
-##################
-wget ftp://ftp.nrg.wustl.edu/pub/DicomBrowser/DicomBrowser-1.5.2.tgz
-wget https://bitbucket.org/nrg/dicombrowser/downloads/DicomBrowser-1.7.0b5-bin-with-dependencies.jar
-# https://wiki.xnat.org/xnat-tools/dicomedit/dicomedit-4-2-language-reference
-DicomRemap -d anon.das -o /path/to/dest/ source/
 
 #########
 ## DNF ##
@@ -376,10 +235,6 @@ http://www.binarytides.com/apt-get-tutorial-package-management-ubuntu-commandlin
 #############
 sudo apt-get remove dropbox
 sudo apt-get install nautilus-dropbox
-#############
-## DTIPREP ##
-#############
-DWIConvert --inputVolume 01011-t1w.nrrd --conversionMode NrrdToFSL --outputVolume testout.nii --outputBVectors testout.bvecs --outputBValues testout.bvals
 
 ###############
 ## exif-tool ##
@@ -405,13 +260,6 @@ anonymous@inria.fr
 lantelmi
 PEAP MSCHV2
 
-#################
-## EXPLORE-DTI ##
-#################
-wget www.exploredti.com/ExploreDTI/Linux/64/ExploreDTI_v4.8.6.zip # standalone
-wget http://www.exploredti.com/ExploreDTI/Pcode/ExploreDTI_Pcode.zip
-export LD_LIBRARY_PATH="/home/luigi/matlab/Source/MD_cor_E/linux64:$LD_LIBRARY_PATH"
-sudo ln -s /home/luigi/matlab/ExploreDTI_v4.8.6/Source/MD_cor_E/linux64/libANNlib.so /usr/lib/libANNlib.so
 ##############
 ## FAIL2BAN ##
 ##############
@@ -424,67 +272,6 @@ sudo iptables -n -L --line-numbers
 
 # to unban
 sudo iptables -D <chain> <chain-number>
-
-############
-## FFMPEG ##
-############
-# info
-ffprobe file.mp4
-ffmpeg -i file.mp4
-
-# https://launchpad.net/~mc3man/+archive/ubuntu/trusty-media
-add-apt-repository ppa:mc3man/trusty-media
-apt-get update
-apt-get dist-upgrade
-rm -r ~/.config/vlc
-
-# space cropping
-ffmpeg -i in.mp4 -filter:v "crop=width:height:x:y" out.mp4
-
-# time cropping
-ffmpeg -i videoIn.mp4 -ss 1:00 -to 2:00 -vn -acodec 'copy' audioOut.aac
-
-# normalize if not @ 0 dB
-ffmpeg -i file.aac -af "volumedetect" -f null /dev/null
-ffmpeg -i video.avi -af "volumedetect" -vn -sn -dn -f null /dev/null
-
-
-ffmpeg -i 01-A_Teardrop_To_The_Sea.flac -acodec aac -strict -2 01-A_Teardrop_To_The_Sea.aac
-# dmn : in windows use "Screen Recorder" to capture the screen
-ffmpeg -i dmn_pt13_.avi -qscale 0 -ss 0:12 -to 0:40 -filter:v "crop=633:846:1269:182,setpts=0.5*PTS" dmn_pt13.avi
-ffmpeg -i dmn_pt13_.avi -qscale 0 -filter:v "setpts=0.5*PTS" dmn_pt13s.avi
-
-# merge video audio
-ffmpeg -i VID_20170717_201300.mp4 -i STE-003.wav -c:v copy -c:a aac -strict experimental -map 0:v:0 -map 1:a:0 output.mp4
-ffmpeg -itsoffset 00:07.0 -i VID_20170717_201300.mp4 -i STE-003.wav -map 0:0 -map 1:0 -acodec aac -strict -2 -vcodec copy -ss 9.0 -to 3:42.0 output.mp4
-
-# concatenate
-ffmpeg -f concat -safe 0 -i mylist.txt -c copy output  # mylist.txt contains lines such as: file 'video.mp4'
-
-# video and audio from 2 different videos
-ffmpeg -i input_0.mp4 -i input_1.mp4 -c copy -map 0:v:0 -map 1:a:0 -shortest out.mp4
-
-# MP3
-ffmpeg -i IN.avi -vn -acodec libmp3lame -ar 48000 -ac 2 [-b:a 192k | -q:a 2] OUT.mp3
-
-# VOB vob
-cat *VOB > movie.vob
-ffmpeg -analyzeduration 100M -probesize 100M -i movie.vob  # find possible hidden tracks by analyzing not just few samples
-ffmpeg -i movie.vob movie.mp4  # default configuration used
-
-# Squeeze smartphone videos
-ffmpeg -i goodnight_moon.mp4 -c:v libx264 -crf 25 -c:a libmp3lame -ar 44100 -ac 1 -b:a 128k output.mp4	
-
-# Multiple subtitles
-ffmpeg -i Input.mp4 -i ita.srt -i eng.srt -i esp.srt -map 0:0 -map 0:1 -map 1 -map 2 -map 3 -c:v copy -c:a copy -c:s srt -metadata:s:s:0 language=Italian -metadata:s:s:1 language=English -metadata:s:s:2 language=Spanish Output.mkv
-
-# Multiple audio tracks
-ffmpeg -i Contagion.mp4 -i Contagion_ITA.mp4 -map 0:0 -map 1:1 -map 0:1 -c:v copy -c:a copy -metadata:s:a:0 language=Italian -metadata:s:a:1 language=French output.mkv
-
-# Grayscale
--vf colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3
-# Seppia
-colorchannelmixer=.393:.769:.189:0:.349:.686:.168:0:.272:.534:.131
 
 ##########
 ## FIND ##
@@ -506,15 +293,7 @@ find ./sub-0040*/ -type f -regex "\(.*_3DT1.nii.gz\|.*_3DT1_iso_acpc_brain.nii.g
 find ./ -type f -size +512k
 # fast loop over millions of files
 time find *.txt -print0 | while IFS= read -rd $'\0' i; do echo $i; done
-##############
-## FMRIPREP ##
-##############
-# Install DOCKER
-# Follow Instruction on website
-# pip install future
 
-# No underscores in subj id
-fmriprep-docker --fs-license-file $FREESURFER_HOME/license.txt [--anat-only  --longitudinal --fs-no-reconall --participant_label PARTICIPANT_LABEL '0040043MACL'] --work-dir <full path to WD> <full path to BIDS> <full path to OUT dir>
 #############
 ## FIREFOX ##
 #############
@@ -553,22 +332,6 @@ iptables -A OUTPUT -o eth0 -p tcp --sport 80 -m state --state ESTABLISHED -j ACC
 cd $HOME/.mozilla/plugins
 ln -s $SOFTWARE_DIR/jdk/jre/lib/amd64/libnpjp2.so
 ln -s $SOFTWARE_DIR/flash_player/libflashplayer.so
-
-#########
-## FSL ##
-#########
-FSLVERSION='fsl-5.0.10'
-wget -c http://fsl.fmrib.ox.ac.uk/fsldownloads/fslinstaller.py
-activate python2.x
-python fslinstaller.py
-
-wget -c http://fsl.fmrib.ox.ac.uk/fsldownloads/${FSLVERSION}-centos6_64.tar.gz
-wget -c http://fsl.fmrib.ox.ac.uk/fsldownloads/md5sums/${FSLVERSION}-centos6_64.tar.gz.md5
-./fslinstaller.py -f ${FSLVERSION}-centos6_64.tar.gz -C `cat ${FSLVERSION}-centos6_64.tar.gz.md5` -d /usr/local/
-sudo ./fslinstaller.py
-sudo python fslinstaller.py -f fsl-5.0.10-centos6_64.tar.gz -C 064abae9083e69fafd114dedd9add465 -T md5 -d /home/luigi/Software/fsl-5.0.10 # the directory must not exists
-
-# To use FSLView please install the PNG12 and MNG libraries with: sudo yum install libpng12 libmng
 
 ###########
 ## FONTS ##
@@ -635,28 +398,6 @@ Code:
 ping <your_host>.ignorelist.com
 
 Done! 
-################
-## FreeSurfer ##
-################
-
-# CROSSECTIONAL
-recon-all -i file.nii.gz [-i file2.nii.gz] -s subjectname -all -hippo-subfields
-#TEMPLATE
-recon-all -base ${sub}_template -tp out_${sub}_T00_001 -tp out_${sub}_T06_001 -all
-#LONG
-recon-all -long out_11_002_VO_T02_MPRAGE_1 11_002_VO_MPRAGE_template -all -hippo-subfields
-
-lcg-info --vo 'VOMS:/vo.neugrid.eu*' --list-ce --attrs OS,OSRelease,TotalCPUs,FreeCPUs,RunningJobs,FreeJobSlots,WaitingJobs
-
-lcg-tags --ce ng-hug-server5.neuro.hcuge.ch --vo vo.neugrid.eu --list
-lcg-tags --ce ng-ki-server5.ki.se --vo vo.neugrid.eu --list
-lcg-info --vo VOMS:/vo.neugrid.eu\* --list-ce --query 'Tag=*VO-vo.neugrid.eu-freesurfer-5.1.0*'
-
-sudo apt-get install libjpeg62:i386
-sudo apt-get install libjpeg62
-
-# VOLUME
-
 
 ###########
 ## FSTAB ##
@@ -762,80 +503,12 @@ hubiC login <email> <folder to synchronize>
 ###########
 iconv --from-code US-ASCII --to-code UTF8 --output 
 
-#################
-## IMAGEMAGICK ##
-#################
-# add text
-convert -pointsize 18 -fill white -draw "text 0,18 '$id'" ${id}_T1_GM_Jac.png test.jpg && eog test.jpg
-
-# IMAGE INFO
-identify -verbose rose.jpg
-convert -density 600 pg_0001.pdf -blur 2 -colorspace Gray -depth 1 -compress Group4 up.png
-
-# Human Brain Mapping
-# aprire le imag con gimp e togliere quell'alpha channel (Layer > Transparency > Remove Alpha Channel)
-convert -profile sRGB.icc <image in> -profile USWebCoatedSWOP.icc -colorspace cmyk -density 600 -geometry 3900x <image out>
-
-convert -negate <in> <out> # invert image
-
-convert -delay 150 -dispose 2 -geometry 800x496 -size 800x496 *.png oceandrain.gif
-convert +level-colors Firebrick, me.jpg oldme.jpg # Mark Zuckerburg could've saved a billion if he knew about ImageMagick.
-convert -fill "#FFFFFF" -opaque "#141414" -fuzz 20% <(curl -s -L http://bit.ly/nUKKfA ) illusion-fix.jpg # Replace dark grays with white
-convert -size 1280x720 plasma:fractal background.png # Create a 1280x720 color plasma image. Different each time.
-convert -rotate -90 sideways.jpg rightsideup.jpg
-
-convert A.eps -transparent white B.png # remove white
-
--size 320x85 canvas:none -font Bookman-DemiItalic -pointsize 72
-
-# GIF
-convert -delay 0 -loop 0 -alpha set -dispose background *.png ani.gif
-convert -dispose background test-{59..135}.png ani.gif
-convert -crop 663X600+0+113 +repage dual.gif cropped.gif
-
-# morphing
-convert original/*.jpg -delay 20 -morph 10 new/img%03d.jpg
-
-# unsharp mask
-convert -unsharp 5.0x10+1.0+0.0 <input file> <output file>
-
-# PDF to Images
-pdftk *.pdf cat output whole.pdf
-
-pdftk whole.pdf burst
-
-gs -sDEVICE=pdfwrite -dNOPAUSE -dBATCH -dSAFER -dFirstPage=1 -dLastPage=4 -sOutputFile=outputT4.pdf T4.pdf
-gs -sDEVICE=pswrite -dNOCACHE -sOutputFile=- -q -dbatch -dNOPAUSE -dQUIET filename.ps -c quit | ps2pdf - "`echo filename.ps | cut -f1 -d'.'`"-nofont.pdf
-
-convert -density 600 in.pdf out.png
-convert -gravity NorthEast -crop 9650x6550+0+0 pg_0200.jpg trim.jpg
-
-# High compresison image to pdf
-convert image.gif -alpha off [ -monochrome | -colorspace Gray -depth 2 ]-compress Zip -quality 100 -units PixelsPerInch -density 600  image_deflate.pdf
-convert image.gif -alpha off -monochrome -compress Group4 -quality 100 -units PixelsPerInch -density 600  image_group4.pdf
-# histogram
-convert pg_0254.png  -format %c -depth 8  histogram:info:histogram_image.txt
-awk '{print $1}' histogram_image.txt | sed 's/://g' | gnuplot plot.gp
-# keep only black
-convert pg_0010.png -fill white -fuzz 50% +opaque "#000000" result.png
-# ALL IN ONE
-convert -density 600 IN.pdf -fill white -fuzz 50% +opaque "#000000"  -alpha off -monochrome -compress Group4 -quality 100 -units PixelsPerInch OUT.pdf
-
-# BRISS
-tool to crop pdf
-wget http://garr.dl.sourceforge.net/project/briss/release%200.9/briss-0.9.tar.gz
-java -Xms512m -Xmx4096m -jar briss-0.9.jar
-
 ############
 ## IMAGEJ ##
 ############
 download from http://imagej.nih.gov/ij/download.html
 http://downloads.openmicroscopy.org/bio-formats/5.1.3/artifacts/bioformats_package.jar
 http://downloads.openmicroscopy.org/latest/bio-formats5.1/artifacts/bioformats_package.jar
-
-##############
-## INKSCAPE ##
-##############
 
 ###########
 ## INRIA ##
@@ -914,37 +587,6 @@ Volume size is: 327867
 2. Running dd with the parameters for block size and volume size:
 dd if=/dev/cdrom of=test.iso bs=<block size from above> count=<volume size from above>
 
-
-##############
-## KVM/QEMU ##
-##############
-http://www.howtogeek.com/117635/how-to-install-kvm-and-create-virtual-machines-on-ubuntu/
-sudo apt-get install qemu-kvm libvirt-bin bridge-utils virt-manager
-sudo adduser $USER libvirtd # only people in libvirtd can use kvm
-virsh -c qemu:///system list
-virsh list --all
-virt-manager --connect qemu:///session
-# find ip of guests
-virsh domiflist <guest>
-
-qemu-img create -f qcow2 virtual.hd 8G
-qemu-img convert -o compat=0.10 -f vmdk -O qcow2 -c -p TurnKeyMySQL20120413-disk1.vmdk TurnKeyMySQL20120413-disk1.qcow2
-qemu-system-i386 -m 2048 -cdrom ./Documents/ISO/vista32bit.iso -boot d -monitor stdio [-no-acpi] temp/virtual.hd
-
-# remote connection
-spicec --host 127.0.0.1 --port 5901
-remote-viewer spice://127.0.0.1:5901
-
-# clone & backup $(date +%Y-%M-%d_%H:%M)
-cp --sparse=always IN.img OUT.img # only for raw files
-tar cfS xnat-1.6.4-server-disk1.img.tar xnat-1.6.4-server-disk1.img
-
-rsync --sparse # the first time, or use dd if=/dev/zero of=file.img bs=1 count=0 seek="$(bitesize of original file)"
-rsync --inplace # to update
-#qemu-img convert -f raw -O raw -S xxx /home/store/xnat_rete_ad/xnat-1.6.4-server-disk1.img 
-
-# http://www.dedoimedo.com/computers/kvm-clone.html
-kpartx -av /kvm/disk.raw
 
 ##########
 ## LAMP ##
@@ -1086,63 +728,6 @@ mencoder temp.mp4 -sub message_GBF.srt -o testWsub.mp4 -oac mp3lame -ovc lavc -o
 # play webcam
 mplayer -cache 128 -tv driver=v4l2:width=640:height=480 -vo xv tv://
 
-############
-## MRICRO ##
-############
-wget http://www.mccauslandcenter.sc.edu/mricro/mricro/mricrox.tar.gz
-sudo mkdir /usr/local/mricro
-sudo tar xzf mricrox.tar.gz -C /usr/local/mricro
-apt-get install ia32-libs
-cd /usr/local/mricro/mricro && ldd libborqt-6.9-qt2.3.so && install missing libraries
-sudo ln -s /usr/lib/i386-linux-gnu/libjpeg.so.8.0.2 /usr/lib/i386-linux-gnu/libjpeg.so.62	
-
-#################
-## NEUGRID/N4U ##
-#################
-# Available N4U CE nodes:
-lcg-info --vo 'VOMS:/vo.neugrid.eu*' --list-ce --attrs OS,OSRelease,TotalCPUs,FreeCPUs,RunningJobs,FreeJobSlots,WaitingJobs
-
-# List the software packages available on the N4U grid:
-lcg-info --list-ce --attr Tag --vo 'VOMS:/vo.neugrid.eu*'
-
-# List the software packages available on a specific N4U node:
-lcg-info --vo 'VOMS:/vo.neugrid.eu*' --list-ce --query 'CE=*srv5.fatebenefratelli.it*' --attrs Tag | grep -E 'CE:|neugrid'
-
-# List the N4U nodes where a specific software package is available:
-lcg-info --vo 'VOMS:/vo.neugrid.eu*' --list-ce --query 'Tag=*VO-vo.neugrid.eu-freesurfer-5.1.0*'
-
-# To check the tags available on a CE:
-lcg-tags --ce ng-maat-server9.gnubila.fr --list 
-
-# EXPRESSLANE
-export EXPRESSLANE_DEBUG=1 # debug mode
-export EXPRESSLANE_VERBOSE=1 # verbose mode
-
-## software on seed resources:
-lcg-info --vo 'VO:vo.neugrid.eu' --list-ce --query 'Tag=*VO-vo.neugrid.eu-cmtk-20140723*' --attrs TotalCPUs,FreeCPUs,RunningJobs
-
-# Delete files in folder:
-for i in $(lfc-ls $PANDORA_GRID_HOME/adaboost/output); do echo $i; lcg-del -a lfn:$PANDORA_GRID_HOME/adaboost/output/$i & sleep 0.1; done
-
-# PERUSAL:
-- To enable the perusal mechanism two parameters need to be added to your .ext file:
-
-PerusalFileEnable=true
-PerusalTimeInterval=1000
-
-
-- Submit your job
-- Execute the following command to enable the functionality:
-
-glite-wms-job-perusal --set -f myOutputFile1 -f myOutputFile2 JOB_ID
-
-
-- Execute the following command to retrieve the output:
-
-glite-wms-job-perusal --get -f myOutputFile1 -f myOutputFile2 --dir MyOutputFolder JOB_ID
-(If the folder does not exist it will be created automatically)
-
-
 #################
 ## NMAP ZENMAP ##
 #################
@@ -1167,147 +752,6 @@ sudo apt-get install compizconfig-settings-manager and then run ccsm. Use advanc
     Refresh rate 200
     Sync to vblank: unchecked
 
-#########
-## OAR ## https://wiki.inria.fr/ClustersSophia/Hardware#_Dell_T640_GPU_nodes
-#########
-# --property=""
-gpu='YES'
-gpucapability>='5.2'
-cluster='dellt630gpu'
-host='nefgpu20.inria.fr'
-dedicated='epione'
-
-# -l
-/nodes=1/core=1,walltime=0:30:0
-/gpunum=1
-
-
-# associate JOBID to COMMAND
-oarstat -u lantelmi | grep effort | awk '{print $1}' | while read i; do oarstat -fj $i | grep -E 'command|Job_Id:' | rev | cut -d' ' -f1 | rev | tr '\n' ' '; echo; done | tee submitted.txt
-# Interactive mode for 30 minutes
-oarsub -I -l /nodes=1/core=1,walltime=0:30:0
-oarsub -I -t besteffort --property="(gpu='YES' AND cluster='dellt630gpu' and dedicated='epione')" -l /gpunum=1,walltime=01:00:00
-oarsub -I -t besteffort --property="(gpu='YES' AND gpucapability='5.2' AND ibswitch='ibswc2nef' AND cluster='dellt630gpu' and cpuarch='x86_64' and dedicated='asclepios')" -l /gpunum=1,walltime=12:00:00
-
-# reservation mode
-oarsub --property="(host='nefgpu29.inria.fr' AND cluster='dellt640gpu')" -l /gpunum=1,walltime=24:00:00 -r "2020-01-20 17:21:00"
-
-# node	cluster	gpucapability
-dedicated	host	cluster	capability	cpu
-mathneuro	nefgpu01	dellr730gpu	3.7	Xeon 2600 # eddy_cuda OK (Matrox Electronics Systems Ltd. G200eR2 rev 01)
-_NO_	nefgpu03	carrigpu	2.0	Xeon 2667
-_NO_	nefgpu04
-_NO_	nefgpu05	dellc6100gpu	2.0	Xeon 2667 # eddy_cuda OK (ASPEED Technology, Inc. ASPEED Graphics Family rev 10)
-_NO_	nefgpu06	dellc6100gpu	2.0	Xeon 2667
-
-epione	nefgpu07	dellt630gpu	5.2	Xeon 2400 # 4x GPU GTX1080Ti (eddy_cuda OK )
-zenith	nefgpu08	dellt630gpu 	6.1	Xeon 2400 # eddy_cuda doesn't work
-graphdeco	nefgpu09	dellt630gpu	5.2	Xeon 2200
-stars	nefgpu10	dellt630gpu	5.2	Xeon 2200
-stars	nefgpu11	dellt630gpu	6.1	Xeon 2200
-stars	nefgpu12	dellt630gpu	6.1	Xeon
-graphdeco	nefgpu13	dellt630gpu	6.1	Xeon 2200
-stars	nefgpu14	dellt630gpu	6.1	Xeon
-stars	nefgpu15	dellt630gpu	6.1	Xeon
-epione	nefgpu16	dellt630gpu	6.1	Xeon 2200 # 4x GPU GTX1080Ti + 2x (E5-2630v4 CPU 10 cores 20 threads) + 128GB RAM + 1.6TB SSD disk under /local
-zenith	nefgpu17	dellt630gpu	6.1	xeon
-_NO_	nefgpu18	dellt630gpu	6.1	xeon
-_NO_	nefgpu19	dellt630gpu	6.1	xeon
-_NO_	nefgpu20	dellt630gpu	6.1	xeon
-stars	nefgpu21	dellt630gpu	6.1	xeon
-stars	nefgpu22	dellt630gpu	6.1	xeon
-tititane-epitome	nefgpu23        dellt630gpu     6.1     xeon
-
-epione	nefgpu24	dellt640gpu	6.1	xeon	# 4x GPU GTX1080Ti
-zenith	nefgpu25	dellt640gpu 	6.1
-wimmics	nefgpu26	dellt640gpu 	6.1
-zenith	nefgpu27	dellt640gpu 	7.5	xeon
-graphdeco	nefgpu28	dellt640gpu 	6.1	xeon
-epione	nefgpu29	dellt640gpu	6.1	xeon
-_NO_	nefgpu30	dellt640gpu	6.1	xeon
-_NO_	nefgpu31	dellt640gpu	6.1	xeon
-_NO_	nefgpu32	dellt640gpu	6.1	xeon
-_NO_	nefgpu40	esc8kgpu	6.1	xeon
-
-_NO_	nefgpu42	dellr740gpu	6.1	xeon
-_NO_	nefgpu43	dellr740gpu	6.1	xeon
-_NO_	nefgpu44	dellr740gpu	6.1	xeon
-_NO_	nefgpu45	dellr740gpu	6.1	xeon
-
-nef001-006	dellr815 	opteron 2200
-nef007-008	dellc6145	opteron 2300
-# Submit
-oarsub -S "./script.sh var1 var2 ..."
-oarsub -S <./script.sh> --array-param-file <args.txt>
-oarsub -n <name> -t <queue> --property="(gpu='YES' AND gpucapability>='5.2')" -S <./script.sh> --array-param-file <args.txt>
-
-# Request
-oarsub -r "$(date '+%Y-%m-%d %H:%M:%S' --date='+1 week')"
-oarsub -r "2018-12-29 18:30:00" -S $PWD/freesurfer_autorecon1_wrapper.sh
-oarsub --property="(host='nefgpu24.inria.fr' AND cluster='dellt640gpu')" -l /gpunum=1,walltime=24:00:00 -r "2018-11-19 08:59:00"
-
-# 200GB to reserve a full node :
-oarsub -p 'mem > 200000' -l /nodes=1
-
-## OARSTAT
-oarstat --gantt "$(date '+%Y-%m-%d %H:%M:%S'),$(date '+%Y-%m-%d %H:%M:%S' --date='+1 week')"
-oarstat --accounting "$(date '+%Y-%m-%d'), $(date '+%Y-%m-%d' --date='+1 week')"
-oarstat --JSON | grep owner | ggSortUniqSort
-
-# find asclepios members
-ls -l $HOME/.. | grep asclepios | awk '{print $3}' | sort | uniq | sort -V | tr '\n' '|'
-
-# QUOTA
-quota -s -u lantelmi
-ls -l $HOME/.. | grep epione | awk '{print $3}' | sort | uniq | sort -V | while read i; do sudo beegfs-ctl --getquota --uid $i | grep $i; done >> quotas && sed 's/|/\ /g' quotas | sort -k 4,4 -k 3,3 -r
-
-# Find the Cluster Master in the last month
-oarstat --accounting "$(date '+%Y-%m-%d' --date='-1 month'), $(date '+%Y-%m-%d')" | sort -r -k7 | awk '{print $0" \t Days "$7/86400" \t Years "$7/86400/365 }' | grep_asclepios
-
-# matlab licences used
-/opt/matlab2015a/etc/glnxa64/lmutil lmstat -c /opt/matlab2015a/licenses/network.lic -a | grep_asclepios | grep lantelmi
-
-# filesystem
-https://wiki.inria.fr/ClustersSophia/User_Guide_new_config#.E2.80.82Disk_space_management
-/home  # Each user has a home directory in the /home storage. You can check you current disk occupation with the quota -s command
-/data  # A distributed scalable file system is available under /data for several usages
-/local (dedicated)   # SSD performance
-/local/tmp (common)  # SSD performance
-/tmp  # node local hard disk
-/dev/shm  # RAM (memory) filesystem
-
-# ENVIRONMENT
-OARCONFFILE=/etc/oar/oar.conf
-OARDIR=/usr/lib/oar
-OARDO_UID=888
-OARDO_USER=oar
-OARUSER=oar
-OARXAUTHLOCATION=/usr/bin/xauth
-OAR_ARRAYID=5362183
-OAR_ARRAYINDEX=1
-OAR_ARRAY_ID=5362183
-OAR_ARRAY_INDEX=1
-OAR_CPUSET=/oar/lantelmi_5362183
-OAR_FILE_NODES=/var/lib/oar/5362183
-OAR_JOBID=5362183
-OAR_JOB_ID=5362183
-OAR_JOB_NAME=
-OAR_JOB_WALLTIME=1:0:0
-OAR_JOB_WALLTIME_SECONDS=3600
-OAR_KEY=1
-OAR_NODEFILE=/var/lib/oar/5362183
-OAR_NODE_FILE=/var/lib/oar/5362183
-OAR_O_WORKDIR=/data/asclepios/share/private/insight_bkp/PROCESSED/FREESURFER
-OAR_PROJECT_NAME=default
-OAR_RESOURCE_FILE=/var/lib/oar/5362183
-OAR_RESOURCE_PROPERTIES_FILE=/var/lib/oar/5362183_resources
-OAR_STDERR=OAR.5362183.stderr
-OAR_STDOUT=OAR.5362183.stdout
-OAR_USER=lantelmi
-OAR_WORKDIR=/data/asclepios/share/private/insight_bkp/PROCESSED/FREESURFER
-OAR_WORKING_DIRECTORY=/data/asclepios/share/private/insight_bkp/PROCESSED/FREESURFER
-SUDO_COMMAND=OAR
-
 #############
 ## OPENSSL ##
 #############
@@ -1315,10 +759,6 @@ SUDO_COMMAND=OAR
 openssl des3 < decrypted_file > encrypted_file
 # decript
 openssl des3 -d < encrypted_file > decrypted_file
-
-############
-## OXYGEN ##
-############
 
 ##############
 ## PASSWORD ##
@@ -1530,24 +970,6 @@ ResultAny=no
 ResultInactive=no
 ResultActive=no
 
-############################
-## QPDF (pdftk on Fedora) ##
-############################
-# merge pages
-qpdf --empty --pages cerfa0.pdf 1 cerfa1.pdf 1 cerfa2.pdf 1 -- out.pdf
-qpdf --empty --pages /home/lantelmi/Documents/blank.pdf 1 fantasie.pdf 1-10 -- out.pdf
-qpdf --empty --pages *.pdf -- out.pdf
-
-#######
-## R ##
-#######
-# Compile from source
-./configure [--prefix=${SOFTWAREDIR}/R --enable-utf8 --with-pcre1 --enable-R-shlib] #  The last option is to enable a library needed by RStudio
-make
-
-## RSTUDIO
-export RSTUDIO_WHICH_R=${SOFTWAREDIR}/R-4.0.3/bin/R && rstudio
-
 ##############
 ## RDESKTOP ##
 ##############
@@ -1571,12 +993,6 @@ rdesktop -u user -p password -g WxH
 rdesktop -g 1600x1000 -u lantelmi@ad.inria.fr -r disk:LOGIN=$HOME bise.inria.fr &
 
 # The share on bise is viewed as: Ce PC > LOGIN sur NAME_OF_YOUR_MACHINE
-
-############
-## RENAME ##
-############
-# Fedora
-rename \.gz \.zip *_AV45.gz
 
 ############
 ## RENICE ##
@@ -1609,6 +1025,15 @@ xrandr --output Virtual1 --mode "1912x980_60.00"
 ###########
 ## RSYNC ##
 ###########
+#One way to move data to /data and in the scratch group in a single pass:
+
+  ## Do the copy. You may prefer to protect it with nohup
+  rsync -aS --chown :scratch SRCDIR/ DSTDIR
+
+  ## If successfull
+  rm -r SRCDIR
+##
+
 --info=progress2 --no-i-r # global progress
 --bwlimit=KBPS
 
@@ -1745,20 +1170,6 @@ sudo apt-get install libv4l-0:i386
 # launch skype:
 env LD_PRELOAD=/usr/lib/i386-linux-gnu/libv4l/v4l1compat.so skype
 
-############
-## SLICER ##
-############
-download from web
-sudo tar xzf Slicer-4.5.0-1-linux-amd64.tar.gz -C /usr/local/
-cd /usr/local/
-sudo ln -s Slicer-4.5.0-1-linux-amd64/ Slicer
-expor
-#########
-## SPM ##
-#########
-wget http://www.fil.ion.ucl.ac.uk/spm/download/restricted/eldorado/spm12.zip
-# Standalone
-wget http://www.fil.ion.ucl.ac.uk/spm/download/restricted/utopia
 
 #########
 ## SSH ##
@@ -1783,32 +1194,7 @@ ssh-keygen -l -f /etc/ssh/ssh_host_rsa_key
 ssh -D 0.0.0.0:1080 -N localhost
 
 through firefox: about:config create string network.security.ports.banned.override set value 22
-#########
-## TAR ##
-#########
-sudo apt-get install lbzip2 pigz pbzip2
-export TAR_OPTIONS="--use-compress-program=pbzip2"
-tar -cjf --use-compress-program=pbzip2 myfile.tar.bz2 mysubdir/
-tar -c fileToCompress | pbzip2 -c > outName.tbz2
-# from file list
-tar -cvf allfiles.tar --files-from mylist.txt
 
-tar -x -f bfiles.tar --wildcards --no-anchored 'b*' --strip-components=NUMBER -C /target/directory
-tar xjvf 02-MRIT1-PT-001-T00-001.long.base_T00-T06_02-MRIT1-PT-001.tar.bz2 --wildcards --no-anchored '*stats/'
-
-pbzip2 -dc 02-MRIT1-PT-001-T00-001.long.base_T00-T06_02-MRIT1-PT-001.tar.bz2 | tar xf - --wildcards --no-anchored '*stats/'
-!! i file non compressi con pbzip2 non possono essere decompressi in multithread
-
-pbzip2 -dkc file.tar.bz2 | tar xf - -C EXTRACTION_DIR --wildcards --no-anchored '*stats/' '*mri/orig.mgz'
-# compress and send
-tar czf - -C /path/to/source files-and-folders | ssh user@target-host "cat - > /path/to/target/backup.tar.gz"
-tar -c hubiC | pbzip2 -c | ssh hug "cat - > /home/pandora_user9/test.tar.bz2"
-
-# split files
-tar cvzf - dir/ | split -b 200MB - sda1.backup.tar.gz. # -b 4294967295 for FAT32 fs
-tar cjf - /cvmfs/neugrid.egi.eu/software/x86_64/leap-2013/ | split -b 4294967295 - ${JobName}.tar.bz2.
-tar -c FOTO | pbzip2 -c | split -b 4294967295 - FOTO.tar.bz2.
-cat sda1.backup.tar.gz.* | tar xzvf - # to recompose
 #################
 ## THUNDERBIRD ##
 #################
@@ -1869,125 +1255,6 @@ hg tags # other versions
 hg update tagname
 
 #########
-## GIT ##
-#########
-http://www.linux.com/learn/tutorials/796387-beginning-git-and-github-for-linux-users/
-################################################################################
-# SUBMODULES
-git submodule add https://github.com/chaconinc/DbConnector
-git commit -am 'added DbConnector module'
-# To clone the main project with the submodule
-git clone --recursive https://github.com/chaconinc/MainProject
-# To update the submodule
-git fetch && git merge  # in the submodule directory
-
-################################################################################
-# PUSH to 2 REMOTES
-# https://gist.github.com/rvl/c3f156e117e22a25f242
-# 
-# Assume an "origin" remote already exists (it's the one you cloned from)
-# 1. Create an empty repository on github
-# 2. add it as a remote named "ggbioing" (the user of the account so you know to you will push
-git remote add ggbioing git@github.com:ggbioing/our-secret-stash.git
-# 3. Set up the push urls
-git remote set-url --add --push origin https://gitlab.inria.fr/asclepios/our-secret-stash.git
-git remote set-url --add --push origin git@github.com:ggbioing/our-secret-stash.git
-# 4. check it out
-git remote show origin
-# to undo: remove origin push to new remote + remove remote
-git remote set-url --delete origin git@github.com:ggbioing/our-secret-stash.git
-git remote remove ggbioing
-################################################################################
-
-# Create a branch
-# Before creating a new branch, pull the changes from upstream. Your master needs to be up to date.
-git pull
-# Create the branch on your local machine and switch in this branch
-git checkout -b [name_of_your_new_branch]
-# Push the branch on remote
-git push origin [name_of_your_new_branch]
-
-# Rename a branch
-git checkout $OLD_BRANCH_NAME
-git branch -m $NEW_BRANCH_NAME
-git push origin :$OLD_BRANCH_NAME $NEW_BRANCH_NAME
-git push --set-upstream origin $NEW_BRANCH_NAME
-
-# delete branch locally
-git branch -d localBranchName
-# delete branch remotely
-git push origin --delete remoteBranchName
-
-## Frequently Used Commands
-git add <newfile>
-git commit -m <message>
-git push
-
-
-## GLOBAL SET UP #
-git config --list
-git config --global user.name "Luigi Antelmi"
-git config --global user.email "luigi.antelmi@gmail.com"
-git config --global push.default simple
-git config --global http.proxy http://192.168.100.62:8080
-git config --global https.proxy https://192.168.100.62:8080
-git config --global url."https://".insteadOf git://
-git config --global color.ui "auto"
-git config --global core.editor "vim"
-git config --global credential.helper cache
-git config --global credential.helper 'cache --timeout=3600'
-git config --global http.postBuffer 524288000 # for big files
-
-unset SSH_ASKPASS # add to .bashrc
-
-# Create a repo on github
-# Connect github with local repo
-git init
-git remote add origin https://github.com/username/myproject.git
-
-## Create a repo on bitbucket and connect local repo
-#  Set up your local directory
-mkdir /path/to/your/project
-cd /path/to/your/project
-git init
-git remote add origin https://ggbioing@bitbucket.org/ggbioing/rete-ad.git
-#  Create your first file, commit, and push
-echo "Luigi Antelmi" >> contributors.txt
-git add contributors.txt
-git commit -m 'Initial commit with contributors'
-git push -u origin master
-
-# change remote url
-git remote set-url origin git@gitlab.inria.fr:epione_ML/mcvae.git
-
-##################
-## GITLAB INRIA ##
-##################
-# Command line instructions
-# Git global setup
-git config user.name "ANTELMI Luigi"
-git config user.email "luigi.antelmi@inria.fr"
-# Create a new repository
-git clone https://lantelmi@gitlab.inria.fr/asclepios_ML/tutorials.git
-cd tutorials
-touch README.md
-git add README.md
-git commit -m "add README"
-git push -u origin master
-# Existing folder
-cd existing_folder
-git init
-git remote add origin https://lantelmi@gitlab.inria.fr/asclepios_ML/tutorials.git
-git add .
-git commit
-git push -u origin master
-# Existing Git repository
-cd existing_repo
-git remote add origin https://lantelmi@gitlab.inria.fr/asclepios_ML/tutorials.git
-git push -u origin --all
-git push -u origin --tags
-
-#########
 ## VIM ##
 #########
 # movements {mov}
@@ -2022,6 +1289,7 @@ C-w v # vertical split
 C-w S # horizontal split
 C-w C-w # to switch b/w windows
 C-w q # to close
+
 ################
 ## VIRTUALBOX ##
 ################
@@ -2096,10 +1364,6 @@ net user administrator /active:yes
 net user antelmi.l /domain
 # change password
 net user  loginid * /domain
-#########
-## ZIP ##
-#########
-zip STATS/csv.zip -@ < csvlist
 
 ###########################################
 ## http://cfenollosa.com/misc/tricks.txt ##

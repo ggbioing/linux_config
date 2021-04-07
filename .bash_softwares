@@ -8,6 +8,9 @@ export PATH="${PATH}:${MYSCRIPTS}/bash"
 # my scripts
 export PATH="${HOME}/Dropbox/PROGETTI/script/general_neuroimaging:${PATH}"
 
+# BFG
+alias bfg="java -jar ${SOFTWARE_DIR}/bfg.jar"
+
 # cmake
 export PATH="${SOFTWARE_DIR}/cmake/bin:${PATH}"
 
@@ -37,6 +40,10 @@ export PATH="${SOFTWARE_DIR}/ImageJ:${PATH}"
 
 # jdk
 export PATH="${SOFTWARE_DIR}/jdk/bin:${PATH}"
+
+# mumps
+export MUMPSDIR="${SOFTWARE_DIR}/MUMPS"
+export PATH="${MUMPSDIR}/bin:${PATH}"
 
 # pycharm
 export PYCHARMDIR="${SOFTWARE_DIR}/pycharm"
