@@ -18,4 +18,4 @@ if [ -f "${HOME}/.bash_dirs" ]; then
 fi
 
 echo "TERM: $TERM $STY"
-cat "${HOME}"/Dropbox/LIBRI/kindle/KindleClippings/*.txt | shuf | head -n1 | sed 's/\. /\.\n/g'
+cat "${HOME}"/GIT/ggbioing/my-personal-zen/books/*.md | grep "^-" | shuf | head -n1 | sed 's/\. /\.\n/g' | sed 's/, /,\n/g'
