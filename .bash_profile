@@ -18,3 +18,4 @@ if [ -f "${HOME}/.bash_dirs" ]; then
 fi
 
 echo "TERM: $TERM $STY"
+source "${HOME}"/GIT/ggbioing/my-personal-zen/random_citation.sh
