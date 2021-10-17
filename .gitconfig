@@ -1,6 +1,8 @@
 [user]
 	name = Luigi Antelmi
 	email = luigi.antelmi@gmail.com
+[init]
+	defaultBranch = main
 [push]
 	default = simple
 [url "https://"]
