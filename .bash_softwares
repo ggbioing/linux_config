@@ -2,73 +2,76 @@ export SOFTWARE_DIR="${HOME}/Software"
 export SOFTWAREDIR="${SOFTWARE_DIR}"
 export PATH="${SOFTWARE_DIR}/bin:${PATH}"
 
-# bash
-export PATH="${PATH}:${MYSCRIPTS}/bash"
+# p4merge
+export PATH="${SOFTWARE_DIR}/p4v/bin:${PATH}"
 
-# my scripts
-export PATH="${HOME}/Dropbox/PROGETTI/script/general_neuroimaging:${PATH}"
-
-# BFG
-alias bfg="java -jar ${SOFTWARE_DIR}/bfg.jar"
-
-# cmake
-export PATH="${SOFTWARE_DIR}/cmake/bin:${PATH}"
-
-# DicomBrowser
-#alias DicomBrowser="java -jar ${SOFTWARE_DIR}/DicomBrowser.jar"
-export PATH="${SOFTWARE_DIR}/DicomBrowser-1.5.2/bin:${PATH}"
-
-# linuxbrew
-if [ -d "${HOME}/.linuxbrew" ]; then
-        export PATH="${PATH}:${HOME}/.linuxbrew/bin"
-fi
-
-# FSL
-#export FSLDIR=""
-export FSLDIR="${SOFTWARE_DIR}/fsl-5.0.10"
-source ${FSLDIR}/etc/fslconf/fsl.sh
-
-# freesurfer
-export FREESURFER_HOME="${SOFTWARE_DIR}/freesurfer"
-source ${FREESURFER_HOME}/SetUpFreeSurfer.sh
-
-# ganttproject
-export PATH="${SOFTWARE_DIR}/ganttproject:${PATH}"
-
-# imageJ
-export PATH="${SOFTWARE_DIR}/ImageJ:${PATH}"
-
-# jdk
-export PATH="${SOFTWARE_DIR}/jdk/bin:${PATH}"
-
-# mumps
-export MUMPSDIR="${SOFTWARE_DIR}/MUMPS"
-export PATH="${MUMPSDIR}/bin:${PATH}"
-
-# pycharm
-export PYCHARMDIR="${SOFTWARE_DIR}/pycharm"
-export PATH="${PYCHARMDIR}/bin:${PATH}"
-
-# mango
-export MANGODIR="${SOFTWARE_DIR}/Mango"
-export PATH="${MANGODIR}:${PATH}"
-
-# mricrogl
-export MRICROGLDIR="${SOFTWARE_DIR}/mricrogl_lx"
-export PATH="${MRICROGLDIR}:${PATH}"
-
-# miniconda3 python
-export PATH="${SOFTWARE_DIR}/Python3/miniconda3/bin:${PATH}"
-[ -f "${SOFTWAREDIR}/Python3/miniconda3/etc/profile.d/conda.sh" ] && . "${SOFTWAREDIR}/Python3/miniconda3/etc/profile.d/conda.sh"
-
-# plink
-export PATH="${SOFTWARE_DIR}/plink:${PATH}"
-
-# SPM
-alias spm12="${SOFTWAREDIR}/MATLAB/spm12/run_spm12.sh ${SOFTWAREDIR}/MATLAB/MCR/MCRv713/"
-
-# dtk trackvis
-export DTKDIR="${SOFTWARE_DIR}/dtk"
-export DSI_PATH="${DTKDIR}/matrices"
-export PATH="${DTKDIR}:${PATH}"
-
+## # bash
+## export PATH="${PATH}:${MYSCRIPTS}/bash"
+## 
+## # my scripts
+## export PATH="${HOME}/Dropbox/PROGETTI/script/general_neuroimaging:${PATH}"
+## 
+## # BFG
+## alias bfg="java -jar ${SOFTWARE_DIR}/bfg.jar"
+## 
+## # cmake
+## export PATH="${SOFTWARE_DIR}/cmake/bin:${PATH}"
+## 
+## # DicomBrowser
+## #alias DicomBrowser="java -jar ${SOFTWARE_DIR}/DicomBrowser.jar"
+## export PATH="${SOFTWARE_DIR}/DicomBrowser-1.5.2/bin:${PATH}"
+## 
+## # linuxbrew
+## if [ -d "${HOME}/.linuxbrew" ]; then
+##         export PATH="${PATH}:${HOME}/.linuxbrew/bin"
+## fi
+## 
+## # FSL
+## #export FSLDIR=""
+## export FSLDIR="${SOFTWARE_DIR}/fsl-5.0.10"
+## source ${FSLDIR}/etc/fslconf/fsl.sh
+## 
+## # freesurfer
+## export FREESURFER_HOME="${SOFTWARE_DIR}/freesurfer"
+## source ${FREESURFER_HOME}/SetUpFreeSurfer.sh
+## 
+## # ganttproject
+## export PATH="${SOFTWARE_DIR}/ganttproject:${PATH}"
+## 
+## # imageJ
+## export PATH="${SOFTWARE_DIR}/ImageJ:${PATH}"
+## 
+## # jdk
+## export PATH="${SOFTWARE_DIR}/jdk/bin:${PATH}"
+## 
+## # mumps
+## export MUMPSDIR="${SOFTWARE_DIR}/MUMPS"
+## export PATH="${MUMPSDIR}/bin:${PATH}"
+## 
+## # pycharm
+## export PYCHARMDIR="${SOFTWARE_DIR}/pycharm"
+## export PATH="${PYCHARMDIR}/bin:${PATH}"
+## 
+## # mango
+## export MANGODIR="${SOFTWARE_DIR}/Mango"
+## export PATH="${MANGODIR}:${PATH}"
+## 
+## # mricrogl
+## export MRICROGLDIR="${SOFTWARE_DIR}/mricrogl_lx"
+## export PATH="${MRICROGLDIR}:${PATH}"
+## 
+## # miniconda3 python
+## export PATH="${SOFTWARE_DIR}/Python3/miniconda3/bin:${PATH}"
+## [ -f "${SOFTWAREDIR}/Python3/miniconda3/etc/profile.d/conda.sh" ] && . "${SOFTWAREDIR}/Python3/miniconda3/etc/profile.d/conda.sh"
+## 
+## # plink
+## export PATH="${SOFTWARE_DIR}/plink:${PATH}"
+## 
+## # SPM
+## alias spm12="${SOFTWAREDIR}/MATLAB/spm12/run_spm12.sh ${SOFTWAREDIR}/MATLAB/MCR/MCRv713/"
+## 
+## # dtk trackvis
+## export DTKDIR="${SOFTWARE_DIR}/dtk"
+## export DSI_PATH="${DTKDIR}/matrices"
+## export PATH="${DTKDIR}:${PATH}"
+## 
