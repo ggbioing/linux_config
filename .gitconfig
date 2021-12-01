@@ -17,14 +17,14 @@
 [diff]
 	tool = p4merge
 [difftool "p4merge"]
-	cmd = p4merge "$LOCAL" "$REMOTE"
+	cmd = "/mnt/c/Program\\ Files/Perforce/p4merge.exe" "$(wslpath -aw $LOCAL)" "$(wslpath -aw $REMOTE)"
 	keepTemporaries = false
 	trustExitCode = false
 	keepBackup = false
 [merge]
 	tool = p4merge
 [mergetool "p4merge"]
-	cmd = p4merge "$BASE" "$LOCAL" "$REMOTE" "$MERGED"
+	cmd = "/mnt/c/Program\\ Files/Perforce/p4merge.exe" "$(wslpath -aw $BASE)" "$(wslpath -aw $LOCAL)" "$(wslpath -aw $REMOTE)" "$(wslpath -aw $MERGED)"
 	keepTemporaries = false
 	trustExitCode = false
 	keepBackup = false
