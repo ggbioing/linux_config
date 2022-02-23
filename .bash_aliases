@@ -275,7 +275,7 @@ alias recent_access='find ./ -type f -exec stat -c "%x %n" {} + | sort -r | head
 alias recent_change='find ./ -type f -exec stat -c "%z %n" {} + | sort -r | head'
 alias recent_today='find ./ -type f -exec ls -al --time-style=+%D {} + | grep `date +%D`'
 
-alias tempo='curl wttr.in && finger nice@graph.no'
+alias tempo='curl wttr.in/Lecce?format=v2'
 alias findf='find -L ./ -type f '
 alias findd='find -L ./ -type d '
 alias findfgid='find -L ./ -type f -perm -2000'
