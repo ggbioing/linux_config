@@ -3,7 +3,7 @@ export SOFTWAREDIR="${SOFTWARE_DIR}"
 export PATH="${SOFTWARE_DIR}/bin:${PATH}"
 
 # p4merge
-export PATH="${SOFTWARE_DIR}/p4v/bin:${PATH}"
+alias p4merge="${SOFTWARE_DIR}/Program_Files/Perforce/p4merge.exe"
 
 ## # bash
 ## export PATH="${PATH}:${MYSCRIPTS}/bash"

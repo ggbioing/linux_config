@@ -28,6 +28,7 @@ alias whos='last -da | grep -vE "^(root|reboot|asmith) "'
 alias dubar='du -x --max-depth=1|sort -rn|awk -F / -v c=$COLUMNS '\''NR==1{t=$1} NR>1{r=int($1/t*c+.5); b="\033[1;31m"; for (i=0; i<r; i++) b=b"#"; printf " %5.2f%% %s\033[0m %s\n", $1/t*100, b, $2}'\''|tac'
 alias scanimage_pnm_gray_300='scanimage --buffer-size=128 --format=pnm --mode="True Gray" --resolution=300'
 alias whatIsMyIp='dig +short myip.opendns.com @resolver1.opendns.com && curl ipinfo.io'
+alias grep="grep --color=auto"
 alias grep_ip="grep -E '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}'"
 alias win2linuxFileNames="prename 's/ /_/g' * && prename 's/_-_/-/g' * && prename 's/__/_/g' *"
 alias skype='env LD_PRELOAD=/usr/lib/i386-linux-gnu/libv4l/v4l1compat.so skype'
