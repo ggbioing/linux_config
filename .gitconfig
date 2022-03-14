@@ -16,6 +16,8 @@
 	postBuffer = 524288000
 [diff]
 	tool = p4merge
+[diff "docx"]
+	textconv = pandoc -t markdown
 [difftool "p4merge"]
 	cmd = "/mnt/c/Program\\ Files/Perforce/p4merge.exe" "$(wslpath -aw $LOCAL)" "$(wslpath -aw $REMOTE)"
 	keepTemporaries = false
