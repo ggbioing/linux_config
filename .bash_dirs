@@ -1,7 +1,4 @@
 # DIRS
-export BIBLIO_ASCLEPIOS='/proj/asclepios/home/publication/conf'
-export MNC3="${HOME}/Seafile/My Library/mnc3"
-export MYSCRIPTS="$HOME/Dropbox/PROGETTI/script"
-export SVGDIR="${HOME}/Dropbox/Pictures/svg"
-export MYPHD="${HOME}/GIT/INRIA/myPhD"
-export BACKUPDIR="/user/${USER}/ses/ses"
+export GGBIOING="${HOME}/Git/ggbioing"
+export ECHO="${GGBIOING}/echo"
+
